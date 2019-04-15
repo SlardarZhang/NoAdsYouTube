@@ -3,4 +3,5 @@
     <string name="accept">Accept</string>
     <string name="tips">Please use the original YouTube application to support your favourite YouTuber.</string>
     <string name="youtube_link">Launch original YouTube</string>
+    <string name="youtube_market" translatable="false">market://details?id=com.google.android.youtube</string>
 </resources>
