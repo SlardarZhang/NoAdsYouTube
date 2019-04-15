@@ -33,7 +33,7 @@ class SplashScreen : AppCompatActivity() {
         }
 
         acceptButton.setOnClickListener {
-            val intent: Intent = Intent(baseContext, MainActivity::class.java)
+            val intent = Intent(baseContext, MainActivity::class.java)
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
             if (shareURL.isNotEmpty()) {
                 intent.putExtra("shareURL", shareURL)
