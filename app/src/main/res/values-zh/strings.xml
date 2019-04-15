@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="accept">同意</string>
+    <string name="tips">请使用原版YouTube以支持您喜爱的YouTuber.</string>
+    <string name="youtube_link">启动原版YouTube</string>
+</resources>
