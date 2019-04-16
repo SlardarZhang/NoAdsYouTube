@@ -11,5 +11,8 @@
               android:layout_height="wrap_content"
               android:gravity="center"
               android:layout_alignParentBottom="true"
-              android:id="@+id/fragment_icon_text"/>
+              android:id="@+id/fragment_icon_text"
+              android:singleLine="true"
+              android:ellipsize="end"
+    />
 </RelativeLayout>

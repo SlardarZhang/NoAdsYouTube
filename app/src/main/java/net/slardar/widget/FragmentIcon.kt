@@ -45,7 +45,6 @@ class FragmentIcon : RelativeLayout {
         this.addView(imageView)
         this.addView(textView)
 
-
         if (attrs != null) {
             val attrArray: TypedArray? = context?.obtainStyledAttributes(attrs, R.styleable.FragmentIcon)
             if (attrArray != null) {

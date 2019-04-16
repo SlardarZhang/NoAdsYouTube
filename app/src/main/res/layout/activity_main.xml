@@ -1,21 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
+<RelativeLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".MainActivity">
+    <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:id="@+id/main_cardView" android:layout_alignParentTop="true"
+            android:layout_alignTop="@+id/navigation_bar"/>
     <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:background="@color/dark_background_color"
             android:layout_gravity="bottom"
-            android:padding="5dp">
+            android:padding="5dp" android:layout_alignParentBottom="true" android:id="@+id/navigation_bar">
         <net.slardar.widget.FragmentIcon
-                android:layout_width="50dp"
-                android:layout_height="match_parent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 app:image="@drawable/ic_tab_home"
-                app:text="@string/home" app:textColor="@android:color/white"/>
+                app:text="@string/home"
+                app:textColor="@android:color/white" android:layout_weight="1"
+                android:focusable="true"
+                android:clickable="true"
+                android:id="@+id/home_icon"
+        />
+        <net.slardar.widget.FragmentIcon
+                android:layout_height="match_parent"
+                android:layout_width="wrap_content"
+                app:image="@drawable/ic_tab_home"
+                app:text="@string/trending"
+                app:textColor="@android:color/white" android:layout_weight="1"
+                android:focusable="true"
+                android:clickable="true"
+                android:id="@+id/trending_icon"
+        />
+        <net.slardar.widget.FragmentIcon
+                android:layout_height="match_parent"
+                android:layout_width="wrap_content"
+                app:image="@drawable/ic_tab_home"
+                app:text="@string/subscriptions"
+                app:textColor="@android:color/white" android:layout_weight="1"
+                android:focusable="true"
+                android:clickable="true"
+                android:id="@+id/subscriptions_icon"
+        />
+        <net.slardar.widget.FragmentIcon
+                android:layout_height="match_parent"
+                android:layout_width="wrap_content"
+                app:image="@drawable/ic_tab_home"
+                app:text="@string/library"
+                app:textColor="@android:color/white" android:layout_weight="1"
+                android:focusable="true"
+                android:clickable="true"
+                android:id="@+id/library_icon"
+        />
     </LinearLayout>
-</FrameLayout>
+</RelativeLayout>
