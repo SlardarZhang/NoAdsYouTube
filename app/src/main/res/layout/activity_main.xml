@@ -5,8 +5,12 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".MainActivity">
-    <android.support.v7.widget.LinearLayoutCompat android:layout_width="match_parent"
-                                                  android:layout_height="wrap_content">
-
-    </android.support.v7.widget.LinearLayoutCompat>
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:background="@color/dark_background_color"
+            android:layout_gravity="bottom"
+            android:padding="5dp">
+    </LinearLayout>
 </FrameLayout>

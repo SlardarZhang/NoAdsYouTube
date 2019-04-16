@@ -1,7 +1,17 @@
 <resources>
     <string name="app_name" translatable="false">No Ads YouTube</string>
+    <string name="youtube_market" translatable="false">market://details?id=com.google.android.youtube</string>
+    <string name="image_content_description" translatable="false">image</string>
+
     <string name="accept">Accept</string>
     <string name="tips">Please use the original YouTube application to support your favourite YouTuber.</string>
     <string name="youtube_link">Launch original YouTube</string>
-    <string name="youtube_market" translatable="false">market://details?id=com.google.android.youtube</string>
+
+    <!-- MainActivity -->
+    <string name="home">Home</string>
+    <string name="trending">Trending</string>
+    <string name="subscriptions">Subscriptions</string>
+    <string name="notifications">Notifications</string>
+    <string name="library">Library</string>
+
 </resources>

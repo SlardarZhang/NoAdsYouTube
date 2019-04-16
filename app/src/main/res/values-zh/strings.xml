@@ -3,4 +3,9 @@
     <string name="accept">同意</string>
     <string name="tips">请使用原版YouTube以支持您喜爱的YouTuber.</string>
     <string name="youtube_link">启动原版YouTube</string>
+    <string name="home">首页</string>
+    <string name="trending">时下流行</string>
+    <string name="subscriptions">订阅内容</string>
+    <string name="notifications">通知</string>
+    <string name="library">媒体库</string>
 </resources>
