@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- SplashScreen -->
     <string name="accept">同意</string>
     <string name="tips">请使用原版YouTube以支持您喜爱的YouTuber.</string>
     <string name="youtube_link">启动原版YouTube</string>
+
+    <!-- MainActivity -->
     <string name="home">首页</string>
     <string name="trending">时下流行</string>
     <string name="subscriptions">订阅内容</string>
