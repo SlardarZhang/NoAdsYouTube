@@ -37,6 +37,18 @@ class MainActivity : AppCompatActivity() {
         navigationBar.getTabAt(2)?.text = getText(R.string.subscriptions)
         navigationBar.getTabAt(3)?.text = getText(R.string.library)
 
+        if (android.os.Build.VERSION.SDK_INT >= 21) {
+            navigationBar.getTabAt(0)?.icon = resources.getDrawable(R.drawable.ic_tab_home, theme)
+            navigationBar.getTabAt(1)?.icon = resources.getDrawable(R.drawable.ic_tab_trending, theme)
+            navigationBar.getTabAt(2)?.icon = resources.getDrawable(R.drawable.ic_tab_subscriptions, theme)
+            navigationBar.getTabAt(3)?.icon = resources.getDrawable(R.drawable.ic_tab_library, theme)
+        } else {
+            navigationBar.getTabAt(0)?.icon = resources.getDrawable(R.drawable.ic_tab_home)
+            navigationBar.getTabAt(1)?.icon = resources.getDrawable(R.drawable.ic_tab_trending)
+            navigationBar.getTabAt(2)?.icon = resources.getDrawable(R.drawable.ic_tab_subscriptions)
+            navigationBar.getTabAt(3)?.icon = resources.getDrawable(R.drawable.ic_tab_library)
+        }
+
 
         //Setup ViewPager Listener
         navigationBar.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
