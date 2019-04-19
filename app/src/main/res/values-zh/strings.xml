@@ -11,4 +11,7 @@
     <string name="subscriptions">订阅内容</string>
     <string name="notifications">通知</string>
     <string name="library">媒体库</string>
+
+    <!--Exception-->
+    <string name="int_null">整数为空</string>
 </resources>
