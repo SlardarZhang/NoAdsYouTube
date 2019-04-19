@@ -2,6 +2,7 @@ package net.slardar.noadsyoutube
 
 import android.os.Bundle
 import android.support.design.widget.TabLayout
+import android.support.v4.content.res.ResourcesCompat
 import android.support.v4.view.ViewPager
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
@@ -43,10 +44,14 @@ class MainActivity : AppCompatActivity() {
             navigationBar.getTabAt(2)?.icon = resources.getDrawable(R.drawable.ic_tab_subscriptions, theme)
             navigationBar.getTabAt(3)?.icon = resources.getDrawable(R.drawable.ic_tab_library, theme)
         } else {
-            navigationBar.getTabAt(0)?.icon = resources.getDrawable(R.drawable.ic_tab_home)
-            navigationBar.getTabAt(1)?.icon = resources.getDrawable(R.drawable.ic_tab_trending)
-            navigationBar.getTabAt(2)?.icon = resources.getDrawable(R.drawable.ic_tab_subscriptions)
-            navigationBar.getTabAt(3)?.icon = resources.getDrawable(R.drawable.ic_tab_library)
+            navigationBar.getTabAt(0)?.icon =
+                ResourcesCompat.getDrawable(resources, R.drawable.ic_tab_home, null)
+            navigationBar.getTabAt(1)?.icon =
+                ResourcesCompat.getDrawable(resources, R.drawable.ic_tab_trending, null)
+            navigationBar.getTabAt(2)?.icon =
+                ResourcesCompat.getDrawable(resources, R.drawable.ic_tab_subscriptions, null)
+            navigationBar.getTabAt(3)?.icon =
+                ResourcesCompat.getDrawable(resources, R.drawable.ic_tab_library, null)
         }
 
 
