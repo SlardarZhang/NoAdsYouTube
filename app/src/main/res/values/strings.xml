@@ -8,6 +8,7 @@
     <string name="accept">Accept</string>
     <string name="tips">Please use the original YouTube application to support your favourite YouTuber.</string>
     <string name="youtube_link">Launch original YouTube</string>
+    <string name="play_by">Play by No Ads YouTube</string>
 
     <!-- MainActivity -->
     <string name="home">Home</string>
@@ -18,5 +19,6 @@
 
     <!--Exception-->
     <string name="int_null">The integer is null</string>
+    <string name="load_error">Load data error</string>
 
 </resources>

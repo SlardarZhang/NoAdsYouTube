@@ -4,6 +4,7 @@
     <string name="accept">同意</string>
     <string name="tips">请使用原版YouTube以支持您喜爱的YouTuber.</string>
     <string name="youtube_link">启动原版YouTube</string>
+    <string name="play_by">使用No Ads YouTube播放</string>
 
     <!-- MainActivity -->
     <string name="home">首页</string>
@@ -14,4 +15,5 @@
 
     <!--Exception-->
     <string name="int_null">整数为空</string>
+    <string name="load_error">加载数据错误</string>
 </resources>
