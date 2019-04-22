@@ -45,8 +45,6 @@ class SlardarHTTPSGet {
                                     charset
                                 }
                             }
-
-                            Log.wtf("charset", charset)
                             msg.arg1 = 0
                             msg.obj = readStream(connect.inputStream, charset)
                         } else {
@@ -77,7 +75,6 @@ class SlardarHTTPSGet {
                     } else {
                         String(buffer, 0, read, charset(htmlCharset!!))
                     }
-                    Log.wtf("Line", line)
                     sb.append(line)
                 }
             }
