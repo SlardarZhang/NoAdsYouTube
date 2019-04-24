@@ -4,5 +4,4 @@ import android.annotation.SuppressLint
 
 
 @SuppressLint("ValidFragment")
-class SubscriptionsFragment @SuppressLint("ValidFragment") constructor(mainActivity: MainActivity) :
-    ListFragment(mainActivity)
+class SubscriptionsFragment : ListFragment()

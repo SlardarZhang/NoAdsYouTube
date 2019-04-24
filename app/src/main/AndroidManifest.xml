@@ -18,7 +18,8 @@
 
         <activity
                 android:name=".MainActivity"
-                android:theme="@style/Theme.AppCompat.DayNight.NoActionBar">
+                android:theme="@style/Theme.AppCompat.DayNight.NoActionBar"
+                android:configChanges="orientation|screenSize|keyboardHidden">
         </activity>
         <activity
                 android:name=".SplashScreen"

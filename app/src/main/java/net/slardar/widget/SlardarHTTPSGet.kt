@@ -20,54 +20,57 @@ class SlardarHTTPSGet {
         }
 
         fun getHTML(url: String, header: ArrayList<Pair<String, String>>, handler: Handler, arg1: Int) {
-            object : Thread() {
-                override fun run() {
-                    val msg = Message()
-                    try {
-                        val connect: HttpsURLConnection = URL(url).openConnection() as HttpsURLConnection
-                        connect.requestMethod = "GET"
-                        connect.readTimeout = TIMEOUT
-                        connect.connectTimeout = TIMEOUT
-                        connect.sslSocketFactory = SSLSocketFactory.getDefault() as SSLSocketFactory
-                        for (i in 0 until header.count()) {
-                            connect.setRequestProperty(header[i].first, header[i].second)
-                        }
-                        connect.connect()
+            Thread(Runnable {
 
-                        if (connect.responseCode == HttpURLConnection.HTTP_OK) {
-                            var charset: String = if (connect.getHeaderField("content-type").isEmpty()) {
-                                ""
-                            } else {
-                                if (connect.getHeaderField("content-type").indexOf("charset=") != -1) {
-                                    connect.getHeaderField("content-type")
-                                        .substring(connect.getHeaderField("content-type").indexOf("charset=") + 8)
-                                } else {
-                                    ""
-                                }
-                            }
-                            charset = if (charset.isEmpty()) {
-                                ""
-                            } else {
-                                if (charset.indexOf(";") != -1) {
-                                    charset.substring(charset.indexOf(";"))
-                                } else {
-                                    charset
-                                }
-                            }
-                            msg.arg1 = arg1
-                            msg.obj = readStream(connect.inputStream, charset)
-                        } else {
-                            msg.arg1 = -1
-                            msg.obj = url
-                            msg.obj = readStream(connect.errorStream, "")
-                        }
-                    } catch (ex: Exception) {
-                        msg.arg1 = -1
-                        msg.obj = ex.message + Log.getStackTraceString(ex)
+                val msg = Message()
+                try {
+                    val connect: HttpsURLConnection = URL(url).openConnection() as HttpsURLConnection
+                    connect.requestMethod = "GET"
+                    connect.readTimeout = TIMEOUT
+                    connect.connectTimeout = TIMEOUT
+                    connect.sslSocketFactory = SSLSocketFactory.getDefault() as SSLSocketFactory
+                    connect.setRequestProperty("Cache-Control", "no-cache")
+                    connect.defaultUseCaches = false
+                    connect.useCaches = false
+                    for (i in 0 until header.count()) {
+                        connect.setRequestProperty(header[i].first, header[i].second)
                     }
-                    handler.sendMessage(msg)
+                    connect.connect()
+
+                    if (connect.responseCode == HttpURLConnection.HTTP_OK) {
+                        var charset: String = if (connect.getHeaderField("content-type").isEmpty()) {
+                            ""
+                        } else {
+                            if (connect.getHeaderField("content-type").indexOf("charset=") != -1) {
+                                connect.getHeaderField("content-type")
+                                    .substring(connect.getHeaderField("content-type").indexOf("charset=") + 8)
+                            } else {
+                                ""
+                            }
+                        }
+                        charset = if (charset.isEmpty()) {
+                            ""
+                        } else {
+                            if (charset.indexOf(";") != -1) {
+                                charset.substring(charset.indexOf(";"))
+                            } else {
+                                charset
+                            }
+                        }
+                        msg.arg1 = arg1
+                        msg.obj = readStream(connect.inputStream, charset)
+                    } else {
+                        msg.arg1 = -1
+                        msg.obj = url
+                        msg.obj = readStream(connect.errorStream, "")
+                    }
+                } catch (ex: Exception) {
+                    Log.wtf("Get HTML", ex)
+                    msg.arg1 = -1
+                    msg.obj = ex.message + Log.getStackTraceString(ex)
                 }
-            }.start()
+                handler.sendMessage(msg)
+            }).start()
         }
 
         /*
@@ -129,6 +132,9 @@ class SlardarHTTPSGet {
                 connect.readTimeout = TIMEOUT
                 connect.connectTimeout = TIMEOUT
                 connect.sslSocketFactory = SSLSocketFactory.getDefault() as SSLSocketFactory
+                connect.setRequestProperty("Cache-Control", "no-cache")
+                connect.defaultUseCaches = false
+                connect.useCaches = false
                 for (i in 0 until header.count()) {
                     connect.setRequestProperty(header[i].first, header[i].second)
                 }

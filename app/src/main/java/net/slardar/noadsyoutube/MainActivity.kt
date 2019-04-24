@@ -4,39 +4,33 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.os.Handler
 import android.support.design.widget.TabLayout
 import android.support.v4.content.ContextCompat
 import android.support.v4.view.ViewPager
 import android.support.v7.app.AppCompatActivity
-import android.widget.Toast
+import android.util.Log
 import net.slardar.widget.SlardarFragmentPagerAdapter
 import net.slardar.widget.SlardarHTTPSGet
-import org.json.JSONObject
+import org.json.JSONArray
 
 
 class MainActivity : AppCompatActivity() {
     private lateinit var navigationBar: TabLayout
     private lateinit var mainViewPager: ViewPager
     private lateinit var fragmentPagerAdapter: SlardarFragmentPagerAdapter
-    internal var displayTheme: Int = 0
-    private var isLogin: Boolean? = false
 
+    private var displayTheme: Int = 0
+    private var isLogin: Boolean = false
 
-    lateinit var homeFragment: HomeFragment
-    lateinit var trendingFragment: TrendingFragment
-    lateinit var subscriptionsFragment: SubscriptionsFragment
-    lateinit var libraryFragment: LibraryFragment
+    private lateinit var homeFragment: HomeFragment
+    private lateinit var trendingFragment: TrendingFragment
+    private lateinit var subscriptionsFragment: SubscriptionsFragment
+    private lateinit var libraryFragment: LibraryFragment
 
-    private lateinit var updateHandler: Handler
+    private lateinit var updateHandler: MainUpdateHandler
 
-    internal var homeItem: JSONObject? = null
-    internal var trendingItem: JSONObject? = null
-    internal var subscriptionsContent: JSONObject? = null
-    internal var libraryContent: JSONObject? = null
+    private var tabs: JSONArray? = null
 
-    internal val homeItemList: ArrayList<VideoItem> = ArrayList()
-    internal val trendingItemList: ArrayList<VideoItem> = ArrayList()
 
     companion object {
         private const val PERMISSION_CODE: Int = 10250
@@ -46,6 +40,23 @@ class MainActivity : AppCompatActivity() {
                 "X-YouTube-Client-Name", "2",
                 "X-YouTube-Client-Version", "2.20190419"
             )
+
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
+        super.onRestoreInstanceState(savedInstanceState)
+        displayTheme = savedInstanceState?.getInt("displayTheme")!!
+        isLogin = savedInstanceState.getBoolean("isLogin")
+        if (savedInstanceState.getString("tabs") != null) {
+            tabs = JSONArray(savedInstanceState.getString("tabs"))
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle?) {
+        outState?.putInt("displayTheme", displayTheme)
+        outState?.putBoolean("isLogin", isLogin)
+        outState?.putString("tabs", tabs.toString())
+        super.onSaveInstanceState(outState)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -59,11 +70,16 @@ class MainActivity : AppCompatActivity() {
         //Initial FragmentPagerAdaptor
         fragmentPagerAdapter = SlardarFragmentPagerAdapter(supportFragmentManager, this)
 
-        homeFragment = HomeFragment(this)
-        trendingFragment = TrendingFragment(this)
-        subscriptionsFragment = SubscriptionsFragment(this)
+        homeFragment = HomeFragment()
+        trendingFragment = TrendingFragment()
+        subscriptionsFragment = SubscriptionsFragment()
         libraryFragment = LibraryFragment()
 
+
+
+        homeFragment.baseContext = baseContext
+        trendingFragment.baseContext = baseContext
+        subscriptionsFragment.baseContext = baseContext
 
         fragmentPagerAdapter.addItem(homeFragment)
         fragmentPagerAdapter.addItem(trendingFragment)
@@ -147,7 +163,10 @@ class MainActivity : AppCompatActivity() {
             displayTheme = 0
         }
 
-        displayTheme = 1
+        homeFragment.setTheme(displayTheme)
+        trendingFragment.setTheme(displayTheme)
+        subscriptionsFragment.setTheme(displayTheme)
+        //libraryFragment.setTheme(displayTheme)
 
         //Setup TabLayout
         navigationBar.getTabAt(0)?.text = getText(R.string.home)
@@ -230,56 +249,48 @@ class MainActivity : AppCompatActivity() {
         updateHandler = MainUpdateHandler(this)
 
         //Load data from YouTube
-        reloadData()
+        when (tabs == null) {
+            true -> reloadData()
+        }
     }
 
-    private fun reloadData() {
-        if (isLogin!!) {
+    fun reloadData() {
+        if (isLogin) {
             //Is Login
 
         } else {
             //Not Login
             SlardarHTTPSGet.getHTML("https://m.youtube.com", updateHandler, 0)
         }
+        Log.wtf("Reload", "Reloaded")
     }
 
-    internal fun reloadHomeItem() {
-
-        val homeURL: String =
-            "https://m.youtube.com/?itct=" + homeItem!!.getString("continuation") + "&ctoken=" + homeItem!!.getString(
-                "clickTrackingParams"
-            ) + "&pbj=1"
-        val header: ArrayList<Pair<String, String>> = ArrayList()
-        var index = 0
-        while (index < YOUTUBE_HEADER.size) {
-            header.add(Pair(YOUTUBE_HEADER[index], YOUTUBE_HEADER[index + 1]))
-            index += 2
+    fun reloaded(tabs: JSONArray) {
+        this.tabs = tabs
+        for (index in 0 until tabs.length()) {
+            when (tabs.getJSONObject(index).getJSONObject("tabRenderer").getString("title")) {
+                resources.getString(R.string.home) -> {
+                    homeFragment.reload(
+                        tabs.getJSONObject(index).getJSONObject("tabRenderer")
+                            .getJSONObject("content").getJSONObject("sectionListRenderer")
+                            .getJSONArray("continuations").getJSONObject(0)
+                            .getJSONObject("reloadContinuationData")
+                    )
+                }
+                resources.getString(R.string.trending) -> {
+                    trendingFragment.reload(
+                        tabs.getJSONObject(index).getJSONObject("tabRenderer")
+                            .getJSONObject("content").getJSONObject("sectionListRenderer")
+                            .getJSONArray("continuations").getJSONObject(0)
+                            .getJSONObject("reloadContinuationData")
+                    )
+                }
+            }
         }
-        SlardarHTTPSGet.getHTML(homeURL, header, updateHandler, 1)
     }
 
-    internal fun reloadTrending() {
-
-        val trendingURL: String =
-            "https://m.youtube.com/?itct=" + trendingItem!!.getString("continuation") + "&ctoken=" + trendingItem!!.getString(
-                "clickTrackingParams"
-            ) + "&pbj=1"
-        val header: ArrayList<Pair<String, String>> = ArrayList()
-        var index = 0
-        while (index < YOUTUBE_HEADER.size) {
-            header.add(Pair(YOUTUBE_HEADER[index], YOUTUBE_HEADER[index + 1]))
-            index += 2
-        }
-        SlardarHTTPSGet.getHTML(trendingURL, header, updateHandler, 2)
-    }
-
-    internal fun refreshItemList() {
-        try {
-            reloadHomeItem()
-            reloadTrending()
-        } catch (ex: Exception) {
-            Toast.makeText(this, ex.message, Toast.LENGTH_SHORT).show()
-        }
+    fun getDisplayTheme(): Int {
+        return displayTheme
     }
 
 }

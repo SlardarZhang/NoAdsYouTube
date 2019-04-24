@@ -10,7 +10,7 @@ class SlardarFragmentPagerAdapter(fragmentManager: FragmentManager?, context: Co
     FragmentPagerAdapter(fragmentManager) {
 
     private var fragments: SparseArray<Fragment?>
-    private lateinit var context: Context
+    private var context: Context? = null
 
     init {
         if (context != null)
