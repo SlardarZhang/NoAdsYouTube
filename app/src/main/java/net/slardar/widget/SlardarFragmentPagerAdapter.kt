@@ -6,12 +6,13 @@ import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
 import android.util.SparseArray
 
-class SlardarFragmentPagerAdapter : FragmentPagerAdapter {
+class SlardarFragmentPagerAdapter(fragmentManager: FragmentManager?, context: Context?) :
+    FragmentPagerAdapter(fragmentManager) {
 
     private var fragments: SparseArray<Fragment?>
     private lateinit var context: Context
 
-    constructor(fragmentManager: FragmentManager?, context: Context?) : super(fragmentManager) {
+    init {
         if (context != null)
             this.context = context
         fragments = SparseArray()

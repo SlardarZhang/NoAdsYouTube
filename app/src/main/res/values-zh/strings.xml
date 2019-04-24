@@ -16,4 +16,5 @@
     <!--Exception-->
     <string name="int_null">整数为空</string>
     <string name="load_error">加载数据错误</string>
+    <string name="no_data">无数据加载</string>
 </resources>
