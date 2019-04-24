@@ -26,7 +26,7 @@ class SplashScreen : AppCompatActivity() {
                 true -> {
                     when (videoID.isNotEmpty()) {
                         true -> {
-                            intent = Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:" + videoID))
+                            intent = Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:$videoID"))
                         }
                     }
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
