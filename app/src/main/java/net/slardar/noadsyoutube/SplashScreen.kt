@@ -1,13 +1,16 @@
 package net.slardar.noadsyoutube
 
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
+import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.widget.Button
 import android.widget.TextView
 
 class SplashScreen : AppCompatActivity() {
+    private val permissionCode: Int = 10250
     private var launchYouTube: TextView? = null
     private var acceptButton: Button? = null
     private var videoID: String = ""
@@ -96,5 +99,44 @@ class SplashScreen : AppCompatActivity() {
             }
         }
 
+
+        //Check permission
+        if (android.os.Build.VERSION.SDK_INT >= 24) {
+            val permissionList: ArrayList<String> = ArrayList()
+
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    android.Manifest.permission.INTERNET
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                permissionList.add(android.Manifest.permission.INTERNET)
+            }
+
+
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    android.Manifest.permission.READ_EXTERNAL_STORAGE
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                permissionList.add(android.Manifest.permission.READ_EXTERNAL_STORAGE)
+            }
+
+
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                permissionList.add(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            }
+
+            if (permissionList.count() > 1) {
+
+                val permissionArray = arrayOfNulls<String>(permissionList.count())
+                permissionList.toArray(permissionArray)
+                this.requestPermissions(permissionArray, permissionCode)
+            }
+
+        }
     }
 }

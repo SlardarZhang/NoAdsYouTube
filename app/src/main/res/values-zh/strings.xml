@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name">无广告 YouTube</string>
     <!-- SplashScreen -->
     <string name="accept">同意</string>
     <string name="tips">请使用原版YouTube以支持您喜爱的YouTuber.</string>

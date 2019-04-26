@@ -21,5 +21,6 @@
             android:layout_height="wrap_content"
             android:id="@+id/loadingProgressBar"
             android:visibility="visible"
-            android:layout_gravity="center"/>
+            android:layout_gravity="center"
+            android:indeterminate="true"/>
 </FrameLayout>

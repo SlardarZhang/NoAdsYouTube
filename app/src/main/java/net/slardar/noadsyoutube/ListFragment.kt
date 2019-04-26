@@ -2,10 +2,11 @@ package net.slardar.noadsyoutube
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.PorterDuff
 import android.os.Bundle
 import android.os.Message
 import android.support.v4.app.Fragment
-import android.util.Log
+import android.support.v4.content.ContextCompat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -28,6 +29,7 @@ abstract class ListFragment : Fragment() {
     private lateinit var listFragmentHandler: ListFragmentHandler
     private var loadedItems: Int = 0
     private var displayTheme: Int = 0
+    private var topRefresh: ((SlardarScrollView) -> Unit)? = null
 
     internal var baseContext: Context? = null
 
@@ -55,13 +57,31 @@ abstract class ListFragment : Fragment() {
         this.scrollView = rootView.findViewById(R.id.scrollView) as SlardarScrollView
 
         //Set Theme
-        when ((this.activity as MainActivity).getDisplayTheme()) {
+        when (displayTheme) {
             0 -> {
                 rootView.setBackgroundResource((R.color.dark_background_color))
+                loadingProgressBar.indeterminateDrawable.setColorFilter(
+                    ContextCompat.getColor(
+                        context!!, if (displayTheme == 0) {
+                            R.color.light_background_color
+                        } else {
+                            R.color.dark_background_color
+                        }
+                    ), PorterDuff.Mode.SRC_IN
+                )
             }
 
             1 -> {
                 rootView.setBackgroundResource((R.color.light_background_color))
+                loadingProgressBar.indeterminateDrawable.setColorFilter(
+                    ContextCompat.getColor(
+                        context!!, if (displayTheme == 0) {
+                            R.color.light_background_color
+                        } else {
+                            R.color.dark_background_color
+                        }
+                    ), PorterDuff.Mode.SRC_IN
+                )
             }
         }
 
@@ -81,20 +101,39 @@ abstract class ListFragment : Fragment() {
 
         //Init variable
         mainActivity = activity as MainActivity
+        scrollView.setShowBottomRefreshIcon(false)
         listFragmentHandler = ListFragmentHandler(this)
-        scrollView.setTopRefresh {
-            Log.wtf("Refresh", "Top")
-        }
 
-        scrollView.setBottomRefresh {
-            Log.wtf("Refresh", "Bottom")
+        topRefresh?.run {
+            scrollView.setTopRefresh(this)
+        }
+        scrollView.setReachBottom {
+            loadMore()
         }
 
         return rootView
     }
 
+    fun setTopRefresh(topRefresh: ((SlardarScrollView) -> Unit)?) {
+        this.topRefresh = topRefresh
+        if (::scrollView.isInitialized) {
+            this.scrollView.setTopRefresh(topRefresh)
+        }
+    }
+
     fun setTheme(displayTheme: Int) {
         this.displayTheme = displayTheme
+        if (::loadingProgressBar.isInitialized) {
+            loadingProgressBar.indeterminateDrawable.setColorFilter(
+                ContextCompat.getColor(
+                    context!!, if (displayTheme == 0) {
+                        R.color.light_background_color
+                    } else {
+                        R.color.dark_background_color
+                    }
+                ), PorterDuff.Mode.SRC_IN
+            )
+        }
     }
 
     fun load(item: JSONObject) {
@@ -125,12 +164,14 @@ abstract class ListFragment : Fragment() {
     }
 
     fun setLoading(isLoading: Boolean) {
-        if (isLoading) {
-            this.loadingProgressBar.visibility = View.VISIBLE
-            this.scrollView.visibility = View.GONE
-        } else {
-            this.loadingProgressBar.visibility = View.GONE
-            this.scrollView.visibility = View.VISIBLE
+        if (::loadingProgressBar.isInitialized && ::scrollView.isInitialized) {
+            if (isLoading) {
+                this.loadingProgressBar.visibility = View.VISIBLE
+                this.scrollView.visibility = View.GONE
+            } else {
+                this.loadingProgressBar.visibility = View.GONE
+                this.scrollView.visibility = View.VISIBLE
+            }
         }
     }
 
@@ -166,9 +207,20 @@ abstract class ListFragment : Fragment() {
                     LayoutInflater.from(requireContext()).inflate(
                         R.layout.load_waiting_item,
                         itemsList,
-                        true
+                        false
                     ) as LinearLayout
-                scrollView.scrollTo(0, scrollView.bottom)
+
+                (loadingItemLayout!!.getChildAt(0) as ProgressBar).indeterminateDrawable.setColorFilter(
+                    ContextCompat.getColor(
+                        context!!, if (displayTheme == 0) {
+                            R.color.light_background_color
+                        } else {
+                            R.color.dark_background_color
+                        }
+                    ), PorterDuff.Mode.SRC_IN
+                )
+                scrollView.scrollTo(0, scrollView.getScrollBottom())
+                itemsList.addView(loadingItemLayout)
                 SlardarHTTPSGet.getStringThread(url, header, listFragmentHandler, 1)
             }
         }
@@ -176,15 +228,27 @@ abstract class ListFragment : Fragment() {
 
     fun addVideoItem(videoItem: VideoItem) {
         loadingItems--
+
+        while (true) {
+            if (itemsList.getChildAt(itemsList.childCount - 1) == null) {
+                break
+            } else if (itemsList.getChildAt(itemsList.childCount - 1).tag == null) {
+                break
+            } else if ((itemsList.getChildAt(itemsList.childCount - 1).tag as String).compareTo("waiting") != 0) {
+                break
+            } else {
+                itemsList.removeViewAt(itemsList.childCount - 1)
+            }
+        }
+
         VideoItem.addVideoItemToView(
             requireContext(),
             videoItem,
             itemsList,
             displayTheme
         )
-        //Log.wtf("Loaded", loadedItems.toString() + "/" + videoItems.count())
+
         if (loadingItemLayout != null) {
-            itemsList.removeView(loadingItemLayout)
             loadingItemLayout = null
         }
     }

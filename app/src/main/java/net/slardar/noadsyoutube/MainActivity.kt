@@ -2,16 +2,15 @@ package net.slardar.noadsyoutube
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.content.pm.PackageManager
 import android.os.Bundle
 import android.support.design.widget.TabLayout
 import android.support.v4.content.ContextCompat
 import android.support.v4.view.ViewPager
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
 import net.slardar.widget.SlardarFragmentPagerAdapter
 import net.slardar.widget.SlardarHTTPSGet
 import org.json.JSONArray
+import java.util.*
 
 
 class MainActivity : AppCompatActivity() {
@@ -33,7 +32,6 @@ class MainActivity : AppCompatActivity() {
 
 
     companion object {
-        private const val PERMISSION_CODE: Int = 10250
         private val YOUTUBE_HEADER: Array<String> =
             arrayOf(
                 "User-Agent", "Mozilla/5.0 (Linux; Android 5.0)",
@@ -75,6 +73,16 @@ class MainActivity : AppCompatActivity() {
         subscriptionsFragment = SubscriptionsFragment()
         libraryFragment = LibraryFragment()
 
+        homeFragment.setTopRefresh {
+            reloadData(1)
+        }
+        trendingFragment.setTopRefresh {
+            reloadData(2)
+        }
+
+        subscriptionsFragment.setTopRefresh {
+            reloadData(3)
+        }
 
 
         homeFragment.baseContext = baseContext
@@ -166,6 +174,7 @@ class MainActivity : AppCompatActivity() {
         homeFragment.setTheme(displayTheme)
         trendingFragment.setTheme(displayTheme)
         subscriptionsFragment.setTheme(displayTheme)
+
         //libraryFragment.setTheme(displayTheme)
 
         //Setup TabLayout
@@ -231,20 +240,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        //Check permission
-        if (android.os.Build.VERSION.SDK_INT >= 24)
-            if (ContextCompat.checkSelfPermission(
-                    this,
-                    android.Manifest.permission.INTERNET
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-
-                this.requestPermissions(
-                    arrayOf(android.Manifest.permission.INTERNET, android.Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                    PERMISSION_CODE
-                )
-            }
-
         //Set load list Data Handler
         updateHandler = MainUpdateHandler(this)
 
@@ -254,36 +249,52 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun reloadData() {
+    fun reloadData(updateIndex: Int = 0) {
+        when (updateIndex) {
+            0 -> {
+                homeFragment.setLoading(true)
+                trendingFragment.setLoading(true)
+                subscriptionsFragment.setLoading(true)
+            }
+            1 -> homeFragment.setLoading(true)
+            2 -> trendingFragment.setLoading(true)
+            3 -> subscriptionsFragment.setLoading(true)
+        }
+
+        val languageHeader: ArrayList<Pair<String, String>> = ArrayList()
+        languageHeader.add(Pair("accept-language", Locale.getDefault().toString()))
         if (isLogin) {
             //Is Login
 
         } else {
             //Not Login
-            SlardarHTTPSGet.getStringThread("https://m.youtube.com", updateHandler, 0)
+            SlardarHTTPSGet.getStringThread("https://m.youtube.com", languageHeader, updateHandler, updateIndex)
         }
-        Log.wtf("Reload", "Reloaded")
     }
 
-    fun reloaded(tabs: JSONArray) {
+    fun reloaded(tabs: JSONArray, updateIndex: Int) {
         this.tabs = tabs
         for (index in 0 until tabs.length()) {
             when (tabs.getJSONObject(index).getJSONObject("tabRenderer").getString("title")) {
                 resources.getString(R.string.home) -> {
-                    homeFragment.load(
-                        tabs.getJSONObject(index).getJSONObject("tabRenderer")
-                            .getJSONObject("content").getJSONObject("sectionListRenderer")
-                            .getJSONArray("continuations").getJSONObject(0)
-                            .getJSONObject("reloadContinuationData")
-                    )
+                    if (updateIndex == 0 || updateIndex == 1) {
+                        homeFragment.load(
+                            tabs.getJSONObject(index).getJSONObject("tabRenderer")
+                                .getJSONObject("content").getJSONObject("sectionListRenderer")
+                                .getJSONArray("continuations").getJSONObject(0)
+                                .getJSONObject("reloadContinuationData")
+                        )
+                    }
                 }
                 resources.getString(R.string.trending) -> {
-                    trendingFragment.load(
-                        tabs.getJSONObject(index).getJSONObject("tabRenderer")
-                            .getJSONObject("content").getJSONObject("sectionListRenderer")
-                            .getJSONArray("continuations").getJSONObject(0)
-                            .getJSONObject("reloadContinuationData")
-                    )
+                    if (updateIndex == 0 || updateIndex == 2) {
+                        trendingFragment.load(
+                            tabs.getJSONObject(index).getJSONObject("tabRenderer")
+                                .getJSONObject("content").getJSONObject("sectionListRenderer")
+                                .getJSONArray("continuations").getJSONObject(0)
+                                .getJSONObject("reloadContinuationData")
+                        )
+                    }
                 }
             }
         }

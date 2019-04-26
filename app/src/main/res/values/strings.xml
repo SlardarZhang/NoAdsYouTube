@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name" translatable="false">No Ads YouTube</string>
+    <string name="app_name">No Ads YouTube</string>
     <string name="youtube_market" translatable="false">market://details?id=com.google.android.youtube</string>
     <string name="image_content_description" translatable="false">image</string>
     <string name="theme" translatable="false">theme</string>
