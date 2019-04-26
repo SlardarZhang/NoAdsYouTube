@@ -2,7 +2,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
              android:layout_width="match_parent"
              android:layout_height="match_parent">
-    <ScrollView
+    <net.slardar.widget.SlardarScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:visibility="gone"
@@ -14,7 +14,7 @@
                 android:id="@+id/root_view">
 
         </LinearLayout>
-    </ScrollView>
+    </net.slardar.widget.SlardarScrollView>
     <ProgressBar
             style="@style/Widget.AppCompat.ProgressBar"
             android:layout_width="wrap_content"

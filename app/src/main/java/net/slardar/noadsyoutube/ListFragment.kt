@@ -1,5 +1,6 @@
 package net.slardar.noadsyoutube
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.os.Message
@@ -11,20 +12,20 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.ProgressBar
-import android.widget.ScrollView
 import net.slardar.widget.SlardarHTTPSGet
+import net.slardar.widget.SlardarScrollView
 import org.json.JSONObject
 
 abstract class ListFragment : Fragment() {
     private lateinit var rootView: FrameLayout
     private lateinit var loadingProgressBar: ProgressBar
     private lateinit var itemsList: LinearLayout
-    private lateinit var scrollView: ScrollView
+    private lateinit var scrollView: SlardarScrollView
 
     internal var itemJSONObject: JSONObject? = null
     private var videoItems: ArrayList<VideoItem> = ArrayList()
     private lateinit var mainActivity: MainActivity
-    private var listFragmentHandler: ListFragmentHandler? = null
+    private lateinit var listFragmentHandler: ListFragmentHandler
     private var loadedItems: Int = 0
     private var displayTheme: Int = 0
 
@@ -38,8 +39,11 @@ abstract class ListFragment : Fragment() {
             "X-YouTube-Client-Name", "2",
             "X-YouTube-Client-Version", "2.20190419"
         )
+    private var loadingItems: Int = 0
+    private var loadingItemLayout: LinearLayout? = null
 
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -48,7 +52,7 @@ abstract class ListFragment : Fragment() {
         this.rootView = inflater.inflate(R.layout.list_fragment, container, false) as FrameLayout
         this.loadingProgressBar = rootView.findViewById(R.id.loadingProgressBar)
         this.itemsList = rootView.findViewById(R.id.root_view)
-        this.scrollView = rootView.findViewById(R.id.scrollView) as ScrollView
+        this.scrollView = rootView.findViewById(R.id.scrollView) as SlardarScrollView
 
         //Set Theme
         when ((this.activity as MainActivity).getDisplayTheme()) {
@@ -74,10 +78,18 @@ abstract class ListFragment : Fragment() {
             }
             setLoading(false)
         }
-        Log.wtf("loadedItems", loadedItems.toString() + "/" + videoItems.count().toString())
+
         //Init variable
         mainActivity = activity as MainActivity
-        listFragmentHandler = ListFragmentHandler(this@ListFragment)
+        listFragmentHandler = ListFragmentHandler(this)
+        scrollView.setTopRefresh {
+            Log.wtf("Refresh", "Top")
+        }
+
+        scrollView.setBottomRefresh {
+            Log.wtf("Refresh", "Bottom")
+        }
+
         return rootView
     }
 
@@ -85,7 +97,7 @@ abstract class ListFragment : Fragment() {
         this.displayTheme = displayTheme
     }
 
-    fun reload(item: JSONObject) {
+    fun load(item: JSONObject) {
         itemJSONObject = item
         videoItems = ArrayList()
         itemsList.removeAllViews()
@@ -93,8 +105,7 @@ abstract class ListFragment : Fragment() {
             "https://m.youtube.com/?itct=" + item.getString("continuation") + "&ctoken=" + item.getString(
                 "clickTrackingParams"
             ) + "&pbj=1"
-        if (listFragmentHandler == null)
-            listFragmentHandler = ListFragmentHandler(this)
+        listFragmentHandler = ListFragmentHandler(this)
         if (header.count() != YOUTUBE_HEADER.size / 2) {
             var index = 0
             while (index < YOUTUBE_HEADER.size) {
@@ -102,7 +113,7 @@ abstract class ListFragment : Fragment() {
                 index += 2
             }
         }
-        SlardarHTTPSGet.getHTML(url, header, listFragmentHandler!!, 1)
+        SlardarHTTPSGet.getStringThread(url, header, listFragmentHandler, 1)
     }
 
     fun setNext(item: JSONObject) {
@@ -124,12 +135,15 @@ abstract class ListFragment : Fragment() {
     }
 
     fun loadMore() {
+        if (loadingItems > 0)
+            return
         if (loadedItems < videoItems.count() - 1) {
             val step = if (loadedItems < videoItems.count() - 6) {
                 5
             } else {
                 videoItems.count() - 1 - loadedItems
             }
+            loadingItems += step
             for (index in loadedItems until loadedItems + step) {
                 if (videoItems[index].isLoaded()) {
                     addVideoItem(videoItems[index])
@@ -137,29 +151,42 @@ abstract class ListFragment : Fragment() {
                     val msg = Message()
                     msg.arg1 = 2
                     msg.obj = videoItems[index]
-                    videoItems[index].loadThumb(listFragmentHandler!!, msg)
+                    videoItems[index].loadThumb(listFragmentHandler, msg)
                 }
             }
             loadedItems += step
 
         } else {
-            if (itemJSONObject != null) {
+            if (itemJSONObject != null && loadingItemLayout == null) {
                 val url: String =
                     "https://m.youtube.com/?itct=" + itemJSONObject!!.getString("continuation") + "&ctoken=" + itemJSONObject!!.getString(
                         "clickTrackingParams"
                     ) + "&pbj=1"
-                SlardarHTTPSGet.getHTML(url, header, listFragmentHandler!!, 1)
+                loadingItemLayout =
+                    LayoutInflater.from(requireContext()).inflate(
+                        R.layout.load_waiting_item,
+                        itemsList,
+                        true
+                    ) as LinearLayout
+                scrollView.scrollTo(0, scrollView.bottom)
+                SlardarHTTPSGet.getStringThread(url, header, listFragmentHandler, 1)
             }
         }
     }
 
     fun addVideoItem(videoItem: VideoItem) {
+        loadingItems--
         VideoItem.addVideoItemToView(
             requireContext(),
             videoItem,
             itemsList,
             displayTheme
         )
+        //Log.wtf("Loaded", loadedItems.toString() + "/" + videoItems.count())
+        if (loadingItemLayout != null) {
+            itemsList.removeView(loadingItemLayout)
+            loadingItemLayout = null
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

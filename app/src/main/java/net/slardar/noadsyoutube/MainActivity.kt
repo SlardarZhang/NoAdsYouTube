@@ -260,7 +260,7 @@ class MainActivity : AppCompatActivity() {
 
         } else {
             //Not Login
-            SlardarHTTPSGet.getHTML("https://m.youtube.com", updateHandler, 0)
+            SlardarHTTPSGet.getStringThread("https://m.youtube.com", updateHandler, 0)
         }
         Log.wtf("Reload", "Reloaded")
     }
@@ -270,7 +270,7 @@ class MainActivity : AppCompatActivity() {
         for (index in 0 until tabs.length()) {
             when (tabs.getJSONObject(index).getJSONObject("tabRenderer").getString("title")) {
                 resources.getString(R.string.home) -> {
-                    homeFragment.reload(
+                    homeFragment.load(
                         tabs.getJSONObject(index).getJSONObject("tabRenderer")
                             .getJSONObject("content").getJSONObject("sectionListRenderer")
                             .getJSONArray("continuations").getJSONObject(0)
@@ -278,7 +278,7 @@ class MainActivity : AppCompatActivity() {
                     )
                 }
                 resources.getString(R.string.trending) -> {
-                    trendingFragment.reload(
+                    trendingFragment.load(
                         tabs.getJSONObject(index).getJSONObject("tabRenderer")
                             .getJSONObject("content").getJSONObject("sectionListRenderer")
                             .getJSONArray("continuations").getJSONObject(0)

@@ -10,9 +10,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_alignParentTop="true"
-            android:layout_alignTop="@+id/navigation_bar"
             android:id="@+id/main_viewPager"
-    />
+            android:layout_above="@+id/navigation_bar"/>
     <android.support.design.widget.TabLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -21,7 +20,7 @@
             app:tabUnboundedRipple="true"
             android:id="@+id/navigation_bar"
             android:layout_alignParentBottom="true"
-
-            app:tabIndicatorHeight="0dp" app:tabTextAppearance="@style/TextAppearance.AppCompat.Small">
+            app:tabIndicatorHeight="0dp"
+            app:tabTextAppearance="@style/TextAppearance.AppCompat.Small">
     </android.support.design.widget.TabLayout>
 </RelativeLayout>

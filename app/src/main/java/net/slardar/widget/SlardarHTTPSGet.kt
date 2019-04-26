@@ -15,11 +15,11 @@ class SlardarHTTPSGet {
     companion object {
         private const val TIMEOUT: Int = 10 * 1000
         private const val BUFFER_SIZE: Int = 4096
-        fun getHTML(url: String, handler: Handler, arg1: Int) {
-            getHTML(url, ArrayList(), handler, arg1)
+        fun getStringThread(url: String, handler: Handler, arg1: Int) {
+            getStringThread(url, ArrayList(), handler, arg1)
         }
 
-        fun getHTML(url: String, header: ArrayList<Pair<String, String>>, handler: Handler, arg1: Int) {
+        fun getStringThread(url: String, header: ArrayList<Pair<String, String>>, handler: Handler, arg1: Int) {
             Thread(Runnable {
 
                 val msg = Message()

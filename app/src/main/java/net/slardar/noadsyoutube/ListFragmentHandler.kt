@@ -19,7 +19,7 @@ class ListFragmentHandler(private val listFragment: ListFragment) : Handler() {
                     val responseJSONObject = JSONObject(msg.obj as String)
                     if (responseJSONObject.has("reload"))
                         if (responseJSONObject.getString("reload").toLowerCase().compareTo("now") == 0) {
-                            listFragment.reload(listFragment.itemJSONObject!!)
+                            listFragment.load(listFragment.itemJSONObject!!)
                             return
                         }
                     jsonObjToVideoItemList(responseJSONObject)
@@ -74,11 +74,6 @@ class ListFragmentHandler(private val listFragment: ListFragment) : Handler() {
             }
         } catch (ex: Exception) {
             Log.wtf("Load List Fragment error", ex)
-            Toast.makeText(
-                listFragment.baseContext,
-                listFragment.baseContext!!.getString(R.string.load_error) + ex.message,
-                Toast.LENGTH_SHORT
-            ).show()
         }
     }
 }

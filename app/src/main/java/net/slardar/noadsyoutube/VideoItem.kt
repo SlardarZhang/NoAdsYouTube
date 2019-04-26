@@ -2,9 +2,9 @@ package net.slardar.noadsyoutube
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.drawable.Drawable
 import android.os.Handler
 import android.os.Message
+import android.support.v4.content.ContextCompat
 import android.view.LayoutInflater
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -33,11 +33,19 @@ class VideoItem(jsonObject: JSONObject) {
         title =
             jsonObject.getJSONObject("title").getJSONArray("runs").getJSONObject(0).getString("text")
         channelThumbnailString = getLargestURL(jsonObject.getJSONObject("channelThumbnail").getJSONArray("thumbnails"))
-        description =
-            jsonObject.getJSONObject("longBylineText").getJSONArray("runs").getJSONObject(0).getString("text") + "·" +
-                    jsonObject.getJSONObject("shortViewCountText").getJSONArray("runs").getJSONObject(0).getString("text") + "·" +
-                    jsonObject.getJSONObject("publishedTimeText").getJSONArray("runs").getJSONObject(0).getString("text")
-
+        var description_tmp =
+            jsonObject.getJSONObject("longBylineText").getJSONArray("runs").getJSONObject(0).getString("text")
+        description_tmp += if (jsonObject.has("shortViewCountText")) {
+            "·" + jsonObject.getJSONObject("shortViewCountText").getJSONArray("runs").getJSONObject(0).getString("text")
+        } else {
+            ""
+        }
+        description_tmp += if (jsonObject.has("publishedTimeText")) {
+            "·" + jsonObject.getJSONObject("publishedTimeText").getJSONArray("runs").getJSONObject(0).getString("text")
+        } else {
+            ""
+        }
+        description = description_tmp
         loaded = false
     }
 
@@ -85,7 +93,7 @@ class VideoItem(jsonObject: JSONObject) {
             when ((videoItem.channelThumbnail != null) && (videoItem.thumbnail != null)) {
                 true -> {
                     val childView: LinearLayout =
-                        LayoutInflater.from(context).inflate(R.layout.video_item, itemsList) as LinearLayout
+                        LayoutInflater.from(context).inflate(R.layout.video_item, itemsList, false) as LinearLayout
 
                     childView.findViewById<ImageView>(R.id.thumbnail).setImageBitmap(videoItem.thumbnail)
                     childView.findViewById<ImageView>(R.id.channelThumbnail).setImageBitmap(videoItem.channelThumbnail)
@@ -98,43 +106,41 @@ class VideoItem(jsonObject: JSONObject) {
                     when (displayTheme) {
                         0 -> {
                             childView.findViewById<TextView>(R.id.title)
-                                .setTextColor(getColorById(context, R.color.light_background_color))
+                                .setTextColor(ContextCompat.getColor(context, R.color.light_background_color))
                             childView.findViewById<TextView>(R.id.description)
-                                .setTextColor(getColorById(context, R.color.light_grey))
-                            itemsList.setBackgroundColor(getColorById(context, R.color.dark_background_color))
+                                .setTextColor(ContextCompat.getColor(context, R.color.light_grey))
+                            itemsList.setBackgroundColor(ContextCompat.getColor(context, R.color.dark_background_color))
                             childView.findViewById<ImageView>(R.id.channelThumbnailCover)
-                                .setImageDrawable(getDrawableById(context, R.drawable.chanel_dark))
+                                .setImageDrawable(ContextCompat.getDrawable(context, R.drawable.chanel_dark))
 
+
+                            childView.findViewById<TextView>(R.id.lengthText)
+                                .setBackgroundResource(R.color.dark_background_color)
+                            childView.findViewById<TextView>(R.id.lengthText)
+                                .setTextColor(ContextCompat.getColor(context, R.color.light_background_color))
                         }
                         1 -> {
                             childView.findViewById<TextView>(R.id.title)
-                                .setTextColor(getColorById(context, R.color.dark_background_color))
+                                .setTextColor(ContextCompat.getColor(context, R.color.dark_background_color))
                             childView.findViewById<TextView>(R.id.description)
-                                .setTextColor(getColorById(context, R.color.dark_grey))
-                            itemsList.setBackgroundColor(getColorById(context, R.color.light_background_color))
+                                .setTextColor(ContextCompat.getColor(context, R.color.dark_grey))
+                            itemsList.setBackgroundColor(
+                                ContextCompat.getColor(
+                                    context,
+                                    R.color.light_background_color
+                                )
+                            )
                             childView.findViewById<ImageView>(R.id.channelThumbnailCover)
-                                .setImageDrawable(getDrawableById(context, R.drawable.chanel_light))
+                                .setImageDrawable(ContextCompat.getDrawable(context, R.drawable.chanel_light))
+
+                            childView.findViewById<TextView>(R.id.lengthText)
+                                .setBackgroundResource(R.color.light_background_color)
+                            childView.findViewById<TextView>(R.id.lengthText)
+                                .setTextColor(ContextCompat.getColor(context, R.color.dark_background_color))
                         }
                     }
                     itemsList.addView(childView)
                 }
-            }
-        }
-
-        private fun getColorById(context: Context, id: Int): Int {
-            if (android.os.Build.VERSION.SDK_INT >= 23) {
-                return context.getColor(id)
-            } else {
-                return context.resources.getColor(id)
-            }
-        }
-
-        private fun getDrawableById(context: Context, id: Int): Drawable? {
-            if (android.os.Build.VERSION.SDK_INT >= 21) {
-                return context.getDrawable(id)
-
-            } else {
-                return context.resources.getDrawable(id)
             }
         }
     }
