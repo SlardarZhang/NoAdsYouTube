@@ -33,19 +33,19 @@ class VideoItem(jsonObject: JSONObject) {
         title =
             jsonObject.getJSONObject("title").getJSONArray("runs").getJSONObject(0).getString("text")
         channelThumbnailString = getLargestURL(jsonObject.getJSONObject("channelThumbnail").getJSONArray("thumbnails"))
-        var description_tmp =
+        var descriptionTmp =
             jsonObject.getJSONObject("longBylineText").getJSONArray("runs").getJSONObject(0).getString("text")
-        description_tmp += if (jsonObject.has("shortViewCountText")) {
+        descriptionTmp += if (jsonObject.has("shortViewCountText")) {
             "·" + jsonObject.getJSONObject("shortViewCountText").getJSONArray("runs").getJSONObject(0).getString("text")
         } else {
             ""
         }
-        description_tmp += if (jsonObject.has("publishedTimeText")) {
+        descriptionTmp += if (jsonObject.has("publishedTimeText")) {
             "·" + jsonObject.getJSONObject("publishedTimeText").getJSONArray("runs").getJSONObject(0).getString("text")
         } else {
             ""
         }
-        description = description_tmp
+        description = descriptionTmp
         loaded = false
     }
 
@@ -115,7 +115,7 @@ class VideoItem(jsonObject: JSONObject) {
 
 
                             childView.findViewById<TextView>(R.id.lengthText)
-                                .setBackgroundResource(R.color.dark_background_color)
+                                .setBackgroundResource(R.drawable.ic_time_background_dark)
                             childView.findViewById<TextView>(R.id.lengthText)
                                 .setTextColor(ContextCompat.getColor(context, R.color.light_background_color))
                         }
@@ -134,7 +134,7 @@ class VideoItem(jsonObject: JSONObject) {
                                 .setImageDrawable(ContextCompat.getDrawable(context, R.drawable.chanel_light))
 
                             childView.findViewById<TextView>(R.id.lengthText)
-                                .setBackgroundResource(R.color.light_background_color)
+                                .setBackgroundResource(R.drawable.ic_time_background_light)
                             childView.findViewById<TextView>(R.id.lengthText)
                                 .setTextColor(ContextCompat.getColor(context, R.color.dark_background_color))
                         }
