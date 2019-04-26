@@ -113,6 +113,10 @@ class SlardarScrollView : NestedScrollView {
         return this.showBottomRefreshIcon
     }
 
+    fun getScrollBottom(): Int {
+        return this.getChildAt(this.childCount - 1).bottom + this.paddingBottom - this.height
+    }
+
 
     override fun dispatchDraw(canvas: Canvas) {
         super.dispatchDraw(canvas)
