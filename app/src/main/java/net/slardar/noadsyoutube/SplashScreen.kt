@@ -11,8 +11,8 @@ import android.widget.TextView
 
 class SplashScreen : AppCompatActivity() {
     private val permissionCode: Int = 10250
-    private var launchYouTube: TextView? = null
-    private var acceptButton: Button? = null
+    private lateinit var launchYouTube: TextView
+    private lateinit var acceptButton: Button
     private var videoID: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -22,7 +22,7 @@ class SplashScreen : AppCompatActivity() {
         acceptButton = findViewById(R.id.accept_button)
 
         //Set Listener
-        launchYouTube!!.setOnClickListener {
+        launchYouTube.setOnClickListener {
             var intent: Intent? = packageManager.getLaunchIntentForPackage("com.google.android.youtube")
             when (intent != null) {
                 // Set Flags to start YouTube
@@ -44,7 +44,7 @@ class SplashScreen : AppCompatActivity() {
             startActivity(intent)
         }
 
-        acceptButton!!.setOnClickListener {
+        acceptButton.setOnClickListener {
             val intent = Intent(baseContext, MainActivity::class.java)
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
             if (videoID.isNotEmpty()) {
