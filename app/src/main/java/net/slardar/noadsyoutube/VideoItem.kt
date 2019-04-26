@@ -89,7 +89,12 @@ class VideoItem(jsonObject: JSONObject) {
     }
 
     companion object {
-        fun addVideoItemToView(context: Context, videoItem: VideoItem, itemsList: LinearLayout, displayTheme: Int) {
+        fun addVideoItemToView(
+            context: Context,
+            videoItem: VideoItem,
+            itemsList: LinearLayout,
+            displayTheme: Int
+        ): LinearLayout? {
             when ((videoItem.channelThumbnail != null) && (videoItem.thumbnail != null)) {
                 true -> {
                     val childView: LinearLayout =
@@ -101,7 +106,6 @@ class VideoItem(jsonObject: JSONObject) {
                     childView.findViewById<TextView>(R.id.title).text = videoItem.title
                     childView.findViewById<TextView>(R.id.description).text = videoItem.description
 
-                    childView.tag = videoItem.videoId
 
                     when (displayTheme) {
                         0 -> {
@@ -140,7 +144,10 @@ class VideoItem(jsonObject: JSONObject) {
                         }
                     }
                     itemsList.addView(childView)
+                    childView.tag = videoItem.videoId
+                    return childView
                 }
+                false -> return null
             }
         }
     }

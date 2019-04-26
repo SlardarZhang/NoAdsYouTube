@@ -2,7 +2,9 @@ package net.slardar.noadsyoutube
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.graphics.PorterDuff
+import android.net.Uri
 import android.os.Bundle
 import android.os.Message
 import android.support.v4.app.Fragment
@@ -13,6 +15,7 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.ProgressBar
+import android.widget.Toast
 import net.slardar.widget.SlardarHTTPSGet
 import net.slardar.widget.SlardarScrollView
 import org.json.JSONObject
@@ -94,7 +97,11 @@ abstract class ListFragment : Fragment() {
 
         if (videoItems.count() > 0) {
             for (index: Int in 0 until loadedItems) {
-                VideoItem.addVideoItemToView(this.requireContext(), videoItems[index], itemsList, displayTheme)
+                VideoItem.addVideoItemToView(this.requireContext(), videoItems[index], itemsList, displayTheme)?.run {
+                    this.setOnClickListener {
+                        playVideo(it as LinearLayout)
+                    }
+                }
             }
             setLoading(false)
         }
@@ -246,7 +253,11 @@ abstract class ListFragment : Fragment() {
             videoItem,
             itemsList,
             displayTheme
-        )
+        )?.run {
+            this.setOnClickListener {
+                playVideo(it as LinearLayout)
+            }
+        }
 
         if (loadingItemLayout != null) {
             loadingItemLayout = null
@@ -259,4 +270,30 @@ abstract class ListFragment : Fragment() {
         super.onSaveInstanceState(outState)
     }
 
+    private fun playVideo(view: LinearLayout) {
+        if (view.tag == null) {
+            Toast.makeText(context, R.string.id_missing, Toast.LENGTH_SHORT).show()
+        } else {
+            val videoID: String = view.tag as String
+            var intent: Intent? = context!!.packageManager.getLaunchIntentForPackage("com.google.android.youtube")
+            when (intent != null) {
+                // Set Flags to start YouTube
+                true -> {
+                    when (videoID.isNotEmpty()) {
+                        true -> {
+                            intent = Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:$videoID"))
+                        }
+                    }
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                }
+
+                // Launch Google Play Store
+                false -> {
+                    intent = Intent(Intent.ACTION_VIEW)
+                    intent.data = Uri.parse(getString(R.string.youtube_market))
+                }
+            }
+            startActivity(intent)
+        }
+    }
 }
