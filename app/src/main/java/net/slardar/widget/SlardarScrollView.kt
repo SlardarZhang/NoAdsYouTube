@@ -2,6 +2,7 @@ package net.slardar.widget
 
 import android.content.Context
 import android.graphics.*
+import android.support.v4.content.ContextCompat
 import android.support.v4.widget.NestedScrollView
 import android.util.AttributeSet
 import android.util.Log
@@ -15,6 +16,7 @@ class SlardarScrollView : NestedScrollView {
 
 
     constructor(context: Context) : super(context)
+
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
     constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
@@ -38,7 +40,8 @@ class SlardarScrollView : NestedScrollView {
         onTouchListener = SlardarScrollOnTouchListener(this)
         setOnTouchListener(onTouchListener)
         damping = 300.0f
-        reloadBitmapOrigin = BitmapFactory.decodeResource(context.resources, R.drawable.ic_reload)
+
+        reloadBitmapOrigin = getBitmapById(R.drawable.ic_reload)
         reloadBitmapBackgroundPaint = Paint()
         reloadBitmapBackgroundPaint.style = Paint.Style.FILL
         reloadBitmapBackgroundPaint.color = Color.argb(255, 85, 85, 85)
@@ -188,22 +191,22 @@ class SlardarScrollView : NestedScrollView {
         private var refreshLoading = false
 
         override fun onTouch(v: View, event: MotionEvent): Boolean {
+            //Reach bottom
+            if (scrollView.scrollY == bottom) {
+                scrollView.reachBottom?.invoke(scrollView)
+            }
+            //Reach Top
+            if (scrollView.scrollY == 0) {
+                scrollView.reachTop?.invoke(scrollView)
+            }
+
             when (event.action) {
                 MotionEvent.ACTION_MOVE -> {
-                    //Reach bottom
-                    if (scrollView.scrollY == bottom) {
-                        scrollView.reachBottom?.invoke(scrollView)
-                    }
-                    //Reach Top
-                    if (scrollView.scrollY == 0) {
-                        scrollView.reachTop?.invoke(scrollView)
-                    }
-
-                    if (startScrollY == 0 && (startY - event.rawY) < 0) {
+                    if (startScrollY == 0 && (startY - event.rawY) < 0 && scrollView.topRefresh != null) {
                         refreshLoading = true
                     }
 
-                    if (startScrollY == bottom && (startY - event.rawY) > 0) {
+                    if (startScrollY == bottom && (startY - event.rawY) > 0 && scrollView.bottomRefresh != null) {
                         refreshLoading = true
                     }
 
@@ -241,6 +244,7 @@ class SlardarScrollView : NestedScrollView {
                             this.invoke(scrollView)
                         }
                     }
+
 
                     startScrollY = -1
                     startY = -1.0f
@@ -281,27 +285,18 @@ class SlardarScrollView : NestedScrollView {
             val matrix = Matrix()
             return when (matrixRefresh) {
                 MatrixRefresh.TOP -> {
+                    matrix.setRotate(
+                        ((currentRawY - startY) * rotationRate / scrollView.damping),
+                        scrollView.reloadBitmap.width / 2.0f,
+                        scrollView.reloadBitmap.width / 2.0f
+                    )
+                    matrix.postScale(
+                        loadingSize / scrollView.reloadBitmap.width.toFloat(),
+                        loadingSize / scrollView.reloadBitmap.width.toFloat()
+                    )
                     if (currentRawY - startY > scrollView.damping) {
-                        matrix.setRotate(
-                            rotationRate,
-                            scrollView.reloadBitmap.width / 2.0f,
-                            scrollView.reloadBitmap.width / 2.0f
-                        )
-                        matrix.postScale(
-                            scrollView.reloadBitmap.width.toFloat() / loadingSize,
-                            scrollView.reloadBitmap.width.toFloat() / loadingSize
-                        )
                         matrix.postTranslate((scrollView.width - loadingSize) / 2.0f, scrollView.damping - loadingSize)
                     } else {
-                        matrix.setRotate(
-                            ((currentRawY - startY) * rotationRate / scrollView.damping),
-                            scrollView.reloadBitmap.width / 2.0f,
-                            scrollView.reloadBitmap.width / 2.0f
-                        )
-                        matrix.postScale(
-                            scrollView.reloadBitmap.width.toFloat() / loadingSize,
-                            scrollView.reloadBitmap.width.toFloat() / loadingSize
-                        )
                         matrix.postTranslate(
                             (scrollView.width - loadingSize) / 2.0f,
                             currentRawY - startY - loadingSize
@@ -311,30 +306,22 @@ class SlardarScrollView : NestedScrollView {
                 }
 
                 MatrixRefresh.BOTTOM -> {
+
+                    matrix.setRotate(
+                        (-(currentRawY - startY) * rotationRate / scrollView.damping),
+                        scrollView.reloadBitmap.width / 2.0f,
+                        scrollView.reloadBitmap.width / 2.0f
+                    )
+                    matrix.postScale(
+                        loadingSize / scrollView.reloadBitmap.width.toFloat(),
+                        loadingSize / scrollView.reloadBitmap.width.toFloat()
+                    )
                     if (currentRawY - startY < -scrollView.damping) {
-                        matrix.setRotate(
-                            rotationRate,
-                            scrollView.reloadBitmap.width / 2.0f,
-                            scrollView.reloadBitmap.width / 2.0f
-                        )
-                        matrix.postScale(
-                            scrollView.reloadBitmap.width.toFloat() / loadingSize,
-                            scrollView.reloadBitmap.width.toFloat() / loadingSize
-                        )
                         matrix.postTranslate(
                             (scrollView.width - loadingSize) / 2.0f,
                             viewBottom.toFloat() - scrollView.damping
                         )
                     } else {
-                        matrix.setRotate(
-                            (-(currentRawY - startY) * rotationRate / scrollView.damping),
-                            scrollView.reloadBitmap.width / 2.0f,
-                            scrollView.reloadBitmap.width / 2.0f
-                        )
-                        matrix.postScale(
-                            scrollView.reloadBitmap.width.toFloat() / loadingSize,
-                            scrollView.reloadBitmap.width.toFloat() / loadingSize
-                        )
                         matrix.postTranslate(
                             (scrollView.width - loadingSize) / 2.0f,
                             viewBottom.toFloat() + currentRawY - startY
@@ -354,4 +341,14 @@ class SlardarScrollView : NestedScrollView {
             TOP, BOTTOM, NONE
         }
     }
+
+    private fun getBitmapById(id: Int): Bitmap {
+        val drawable = ContextCompat.getDrawable(context, id)!!
+        val bitmap: Bitmap = Bitmap.createBitmap(128, 128, Bitmap.Config.ARGB_4444)
+        val canvas = Canvas(bitmap)
+        drawable.setBounds(0, 0, canvas.width, canvas.height)
+        drawable.draw(canvas)
+        return bitmap
+    }
+
 }
