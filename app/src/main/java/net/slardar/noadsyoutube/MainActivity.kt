@@ -277,7 +277,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         val languageHeader: ArrayList<Pair<String, String>> = ArrayList()
-        languageHeader.add(Pair("accept-language", Locale.getDefault().toString()))
+        languageHeader.add(Pair("accept-language", Locale.getDefault().toString() + ";q=0.9, *;q=0.2"))
         if (isLogin) {
             //Is Login
 

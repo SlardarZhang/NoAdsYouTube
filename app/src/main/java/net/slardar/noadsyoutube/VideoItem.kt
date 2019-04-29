@@ -36,12 +36,12 @@ class VideoItem(jsonObject: JSONObject) {
         var descriptionTmp =
             jsonObject.getJSONObject("longBylineText").getJSONArray("runs").getJSONObject(0).getString("text")
         descriptionTmp += if (jsonObject.has("shortViewCountText")) {
-            "·" + jsonObject.getJSONObject("shortViewCountText").getJSONArray("runs").getJSONObject(0).getString("text")
+            " · " + jsonObject.getJSONObject("shortViewCountText").getJSONArray("runs").getJSONObject(0).getString("text")
         } else {
             ""
         }
         descriptionTmp += if (jsonObject.has("publishedTimeText")) {
-            "·" + jsonObject.getJSONObject("publishedTimeText").getJSONArray("runs").getJSONObject(0).getString("text")
+            " · " + jsonObject.getJSONObject("publishedTimeText").getJSONArray("runs").getJSONObject(0).getString("text")
         } else {
             ""
         }

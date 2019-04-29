@@ -19,6 +19,7 @@ class ListFragmentHandler(private val listFragment: ListFragment) : Handler() {
                     val responseJSONObject = JSONObject(msg.obj as String)
                     if (responseJSONObject.has("reload"))
                         if (responseJSONObject.getString("reload").toLowerCase().compareTo("now") == 0) {
+                            listFragment.setLoading(false)
                             listFragment.load(listFragment.itemJSONObject!!)
                             return
                         }

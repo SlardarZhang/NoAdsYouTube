@@ -19,6 +19,8 @@ import android.widget.Toast
 import net.slardar.widget.SlardarHTTPSGet
 import net.slardar.widget.SlardarScrollView
 import org.json.JSONObject
+import java.util.*
+import kotlin.collections.ArrayList
 
 abstract class ListFragment : Fragment() {
     private lateinit var rootView: FrameLayout
@@ -159,6 +161,7 @@ abstract class ListFragment : Fragment() {
                 index += 2
             }
         }
+        header.add(Pair("accept-language", Locale.getDefault().toString() + ";q=0.9, *;q=0.2"))
         SlardarHTTPSGet.getStringThread(url, header, listFragmentHandler, 1)
     }
 
