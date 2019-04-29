@@ -105,30 +105,30 @@ class MainActivity : AppCompatActivity() {
                 when (tab.position) {
                     0 -> {
                         when (displayTheme) {
-                            0 -> tab.icon = ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_tab_home_light)
-                            1 -> tab.icon = ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_tab_home_red)
+                            0 -> tab.icon = ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_home_light)
+                            1 -> tab.icon = ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_home_red)
                         }
                     }
                     1 -> {
                         when (displayTheme) {
                             0 -> tab.icon =
-                                ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_tab_trending_light)
-                            1 -> tab.icon = ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_tab_trending_red)
+                                ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_trending_light)
+                            1 -> tab.icon = ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_trending_red)
                         }
                     }
                     2 -> {
                         when (displayTheme) {
                             0 -> tab.icon =
-                                ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_tab_subscriptions_light)
+                                ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_subscriptions_light)
                             1 -> tab.icon =
-                                ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_tab_subscriptions_red)
+                                ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_subscriptions_red)
                         }
                     }
                     3 -> {
                         when (displayTheme) {
                             0 -> tab.icon =
-                                ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_tab_library_light)
-                            1 -> tab.icon = ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_tab_library_red)
+                                ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_library_light)
+                            1 -> tab.icon = ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_library_red)
                         }
                     }
                 }
@@ -137,16 +137,27 @@ class MainActivity : AppCompatActivity() {
             override fun onTabUnselected(tab: TabLayout.Tab) {
                 when (tab.position) {
                     0 -> {
-                        tab.icon = ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_tab_home_dark)
+                        tab.icon = ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_home_dark)
                     }
                     1 -> {
-                        tab.icon = ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_tab_trending_dark)
+                        when (displayTheme) {
+                            0 -> tab.icon = ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_trending_dark)
+                            1 -> tab.icon =
+                                ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_trending_dark_light)
+                        }
+
                     }
                     2 -> {
-                        tab.icon = ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_tab_subscriptions_dark)
+                        when (displayTheme) {
+                            0 -> tab.icon =
+                                ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_subscriptions_dark)
+                            1 -> tab.icon =
+                                ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_subscriptions_dark_light)
+                        }
+
                     }
                     3 -> {
-                        tab.icon = ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_tab_library_dark)
+                        tab.icon = ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_library_dark)
                     }
                 }
             }
@@ -199,16 +210,16 @@ class MainActivity : AppCompatActivity() {
 
 
                 with(navigationBar.getTabAt(0)) {
-                    this?.icon = ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_tab_home_light)
+                    this?.icon = ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_home_light)
                 }
                 with(navigationBar.getTabAt(1)) {
-                    this?.icon = ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_tab_trending_light)
+                    this?.icon = ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_trending_dark)
                 }
                 with(navigationBar.getTabAt(2)) {
-                    this?.icon = ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_tab_subscriptions_light)
+                    this?.icon = ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_subscriptions_dark)
                 }
                 with(navigationBar.getTabAt(3)) {
-                    this?.icon = ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_tab_library_light)
+                    this?.icon = ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_library_dark)
                 }
             }
 
@@ -226,16 +237,16 @@ class MainActivity : AppCompatActivity() {
                 )
 
                 with(navigationBar.getTabAt(0)) {
-                    this?.icon = ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_tab_home_red)
+                    this?.icon = ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_home_red)
                 }
                 with(navigationBar.getTabAt(1)) {
-                    this?.icon = ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_tab_trending_dark)
+                    this?.icon = ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_trending_dark_light)
                 }
                 with(navigationBar.getTabAt(2)) {
-                    this?.icon = ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_tab_subscriptions_dark)
+                    this?.icon = ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_subscriptions_dark_light)
                 }
                 with(navigationBar.getTabAt(3)) {
-                    this?.icon = ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_tab_library_dark)
+                    this?.icon = ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_library_dark)
                 }
             }
         }
