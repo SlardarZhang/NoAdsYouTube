@@ -143,7 +143,6 @@ class SlardarScrollView : NestedScrollView {
                 }
             }
             else -> {
-
             }
         }
     }
@@ -189,7 +188,6 @@ class SlardarScrollView : NestedScrollView {
         private var viewBottom: Int = 0
 
         private var refreshLoading = false
-
         override fun onTouch(v: View, event: MotionEvent): Boolean {
             //Reach bottom
             if (scrollView.scrollY == bottom) {
@@ -199,36 +197,37 @@ class SlardarScrollView : NestedScrollView {
             if (scrollView.scrollY == 0) {
                 scrollView.reachTop?.invoke(scrollView)
             }
-
             when (event.action) {
                 MotionEvent.ACTION_MOVE -> {
-                    if (startScrollY == 0 && (startY - event.rawY) < 0 && scrollView.topRefresh != null) {
-                        refreshLoading = true
-                    }
+                    if (startY == -1.0f) {
+                        bottom =
+                            scrollView.getChildAt(scrollView.childCount - 1).bottom + scrollView.paddingBottom - scrollView.height
+                        startScrollY = scrollView.scrollY
+                        startY = event.rawY
 
-                    if (startScrollY == bottom && (startY - event.rawY) > 0 && scrollView.bottomRefresh != null) {
-                        refreshLoading = true
-                    }
+                        loadingSize = if (scrollView.width < scrollView.height) {
+                            Math.round(scrollView.width * loadingRate)
+                        } else {
+                            Math.round(scrollView.height * loadingRate)
+                        }
 
-                    if (refreshLoading) {
-                        currentRawY = event.rawY
-                        scrollView.invalidate()
-                    }
-                }
+                        viewBottom = scrollView.getChildAt(scrollView.childCount - 1).bottom
 
-                MotionEvent.ACTION_DOWN -> {
-                    bottom =
-                        scrollView.getChildAt(scrollView.childCount - 1).bottom + scrollView.paddingBottom - scrollView.height
-                    startScrollY = scrollView.scrollY
-                    startY = event.rawY
 
-                    loadingSize = if (scrollView.width < scrollView.height) {
-                        Math.round(scrollView.width * loadingRate)
                     } else {
-                        Math.round(scrollView.height * loadingRate)
-                    }
+                        if (startScrollY == 0 && (startY - event.rawY) < 0 && scrollView.topRefresh != null) {
+                            refreshLoading = true
+                        }
 
-                    viewBottom = scrollView.getChildAt(scrollView.childCount - 1).bottom
+                        if (startScrollY == bottom && (startY - event.rawY) > 0 && scrollView.bottomRefresh != null) {
+                            refreshLoading = true
+                        }
+
+                        if (refreshLoading) {
+                            currentRawY = event.rawY
+                            scrollView.invalidate()
+                        }
+                    }
                 }
 
                 MotionEvent.ACTION_UP -> {

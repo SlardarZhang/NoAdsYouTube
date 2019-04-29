@@ -74,13 +74,17 @@ class MainActivity : AppCompatActivity() {
         libraryFragment = LibraryFragment()
 
         homeFragment.setTopRefresh {
+            homeFragment.setLoading(true)
             reloadData(1)
+
         }
         trendingFragment.setTopRefresh {
+            trendingFragment.setLoading(true)
             reloadData(2)
         }
 
         subscriptionsFragment.setTopRefresh {
+            subscriptionsFragment.setLoading(true)
             reloadData(3)
         }
 
