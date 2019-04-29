@@ -10,13 +10,13 @@ import android.view.MotionEvent
 import android.view.View
 import net.slardar.noadsyoutube.R
 
+
 class SlardarScrollView : NestedScrollView {
     private val onTouchListener: SlardarScrollOnTouchListener
     private var customOnTouchListener: OnTouchListener? = null
 
 
     constructor(context: Context) : super(context)
-
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
     constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
@@ -36,16 +36,18 @@ class SlardarScrollView : NestedScrollView {
     private var showTopRefreshIcon: Boolean = true
     private var showBottomRefreshIcon: Boolean = true
 
+
     init {
         onTouchListener = SlardarScrollOnTouchListener(this)
         setOnTouchListener(onTouchListener)
-        damping = 300.0f
+        damping = 400.0f
 
         reloadBitmapOrigin = getBitmapById(R.drawable.ic_reload)
         reloadBitmapBackgroundPaint = Paint()
         reloadBitmapBackgroundPaint.style = Paint.Style.FILL
         reloadBitmapBackgroundPaint.color = Color.argb(255, 85, 85, 85)
         reloadBitmap = buildReloadBitmap(reloadBitmapOrigin)
+
     }
 
     fun setScrollChangedListener(scrollChanged: ((SlardarScrollView) -> Unit)?) {
@@ -120,6 +122,17 @@ class SlardarScrollView : NestedScrollView {
         return this.getChildAt(this.childCount - 1).bottom + this.paddingBottom - this.height
     }
 
+    override fun onScrollChanged(l: Int, t: Int, oldl: Int, oldt: Int) {
+        super.onScrollChanged(l, t, oldl, oldt)
+        if (t >= onTouchListener.getBottom()) {
+            this.reachBottom?.invoke(this)
+        }
+
+        if (t == 0) {
+            this.reachTop?.invoke(this)
+        }
+    }
+
 
     override fun dispatchDraw(canvas: Canvas) {
         super.dispatchDraw(canvas)
@@ -175,7 +188,7 @@ class SlardarScrollView : NestedScrollView {
     }
 
     private class SlardarScrollOnTouchListener(private val scrollView: SlardarScrollView) : OnTouchListener {
-        private val refreshRate: Float = 0.5f
+        private val refreshRate: Float = 0.80f
         private val loadingRate: Float = 0.1f
         private val rotationRate: Float = 135.0f
 
@@ -188,16 +201,11 @@ class SlardarScrollView : NestedScrollView {
         private var viewBottom: Int = 0
 
         private var refreshLoading = false
+
+
         override fun onTouch(v: View, event: MotionEvent): Boolean {
-            //Reach bottom
-            if (scrollView.scrollY == bottom) {
-                scrollView.reachBottom?.invoke(scrollView)
-            }
-            //Reach Top
-            if (scrollView.scrollY == 0) {
-                scrollView.reachTop?.invoke(scrollView)
-            }
-            when (event.action) {
+            when (event.actionMasked) {
+                MotionEvent.ACTION_DOWN,
                 MotionEvent.ACTION_MOVE -> {
                     if (startY == -1.0f) {
                         bottom =
@@ -210,9 +218,7 @@ class SlardarScrollView : NestedScrollView {
                         } else {
                             Math.round(scrollView.height * loadingRate)
                         }
-
                         viewBottom = scrollView.getChildAt(scrollView.childCount - 1).bottom
-
 
                     } else {
                         if (startScrollY == 0 && (startY - event.rawY) < 0 && scrollView.topRefresh != null) {
@@ -230,8 +236,9 @@ class SlardarScrollView : NestedScrollView {
                     }
                 }
 
+                MotionEvent.ACTION_CANCEL,
                 MotionEvent.ACTION_UP -> {
-                    if (refreshLoading && (startY - event.rawY) > scrollView.damping * refreshRate) {
+                    if (refreshLoading && (startY - event.rawY) * 0.5f > scrollView.damping * refreshRate) {
                         scrollView.bottomRefresh?.run {
                             this.invoke(scrollView)
                         }
@@ -253,7 +260,7 @@ class SlardarScrollView : NestedScrollView {
                 }
 
                 else -> {
-                    Log.wtf("Event", MotionEvent.actionToString(event.action))
+                    Log.wtf("Event", MotionEvent.actionToString(event.actionMasked))
                 }
             }
 
@@ -293,12 +300,15 @@ class SlardarScrollView : NestedScrollView {
                         loadingSize / scrollView.reloadBitmap.width.toFloat(),
                         loadingSize / scrollView.reloadBitmap.width.toFloat()
                     )
-                    if (currentRawY - startY > scrollView.damping) {
-                        matrix.postTranslate((scrollView.width - loadingSize) / 2.0f, scrollView.damping - loadingSize)
+                    if ((currentRawY - startY) > scrollView.damping) {
+                        matrix.postTranslate(
+                            (scrollView.width - loadingSize) / 2.0f,
+                            (scrollView.damping - loadingSize)
+                        )
                     } else {
                         matrix.postTranslate(
                             (scrollView.width - loadingSize) / 2.0f,
-                            currentRawY - startY - loadingSize
+                            (currentRawY - startY - loadingSize)
                         )
                     }
                     matrix
@@ -315,15 +325,15 @@ class SlardarScrollView : NestedScrollView {
                         loadingSize / scrollView.reloadBitmap.width.toFloat(),
                         loadingSize / scrollView.reloadBitmap.width.toFloat()
                     )
-                    if (currentRawY - startY < -scrollView.damping) {
+                    if ((currentRawY - startY) < -scrollView.damping) {
                         matrix.postTranslate(
                             (scrollView.width - loadingSize) / 2.0f,
-                            viewBottom.toFloat() - scrollView.damping
+                            (viewBottom.toFloat() - scrollView.damping)
                         )
                     } else {
                         matrix.postTranslate(
                             (scrollView.width - loadingSize) / 2.0f,
-                            viewBottom.toFloat() + currentRawY - startY
+                            (viewBottom.toFloat() + currentRawY - startY)
                         )
                     }
                     matrix
@@ -334,6 +344,10 @@ class SlardarScrollView : NestedScrollView {
                 }
 
             }
+        }
+
+        fun getBottom(): Int {
+            return bottom
         }
 
         enum class MatrixRefresh {
