@@ -1,10 +1,12 @@
 package net.slardar.noadsyoutube
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Handler
 import android.os.Message
 import android.support.v4.content.ContextCompat
+import android.util.Log
 import android.view.LayoutInflater
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -55,16 +57,24 @@ class VideoItem(jsonObject: JSONObject) {
                 handler.sendMessage(msg)
             }
             false ->
-                Thread(Runnable {
-                    thumbnail = SlardarHTTPSGet.getBitmap(thumbnailString)
-                    channelThumbnail = SlardarHTTPSGet.getBitmap(channelThumbnailString)
-                    when (thumbnail != null && channelThumbnail != null) {
-                        true -> {
-                            handler.sendMessage(msg)
+                try {
+                    Thread(Runnable {
+                        try {
+                            thumbnail = SlardarHTTPSGet.getBitmap(thumbnailString)
+                            channelThumbnail = SlardarHTTPSGet.getBitmap(channelThumbnailString)
+                            when (thumbnail != null && channelThumbnail != null) {
+                                true -> {
+                                    handler.sendMessage(msg)
+                                }
+                            }
+                            this@VideoItem.loaded = true
+                        } catch (ex: Exception) {
+                            Log.wtf("Load thumb error", ex)
                         }
-                    }
-                    this@VideoItem.loaded = true
-                }).start()
+                    }).start()
+                } catch (ex: Exception) {
+                    Log.wtf("Load thumb thread error", ex)
+                }
         }
     }
 
@@ -94,7 +104,7 @@ class VideoItem(jsonObject: JSONObject) {
             videoItem: VideoItem,
             itemsList: LinearLayout,
             displayTheme: Int
-        ): LinearLayout? {
+        ) {
             when ((videoItem.channelThumbnail != null) && (videoItem.thumbnail != null)) {
                 true -> {
                     val childView: LinearLayout =
@@ -145,9 +155,15 @@ class VideoItem(jsonObject: JSONObject) {
                     }
                     itemsList.addView(childView)
                     childView.tag = videoItem.videoId
-                    return childView
+                    childView.setOnClickListener {
+                        val intent = Intent(context, PlayVideo::class.java)
+                        intent.putExtra("VID", videoItem.videoId)
+                        context.startActivity(intent)
+                    }
+
+                    //return childView
                 }
-                false -> return null
+                false -> return //null
             }
         }
     }

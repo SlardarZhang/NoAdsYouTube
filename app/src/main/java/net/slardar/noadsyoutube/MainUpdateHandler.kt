@@ -17,6 +17,7 @@ class MainUpdateHandler(activity: MainActivity) : Handler(activity.mainLooper) {
                 mainActivity.reloaded(this, msg.arg1)
             }
         }
+        super.handleMessage(msg)
     }
 
     private fun objToTabJSONArray(obj: String): JSONArray? {

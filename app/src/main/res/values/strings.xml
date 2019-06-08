@@ -22,4 +22,6 @@
     <string name="load_error">Load data error</string>
     <string name="no_data">No data loaded</string>
     <string name="id_missing">Play video error, video ID is missing</string>
+    <string name="video_unavailable">Video unavailable</string>
+
 </resources>

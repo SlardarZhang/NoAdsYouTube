@@ -9,7 +9,6 @@ import org.json.JSONObject
 
 class ListFragmentHandler(private val listFragment: ListFragment) : Handler() {
     override fun handleMessage(msg: Message) {
-        super.handleMessage(msg)
         when (msg.arg1) {
             -1 -> {
                 Log.wtf("Load Fragment List error", msg.obj as String)
@@ -45,9 +44,14 @@ class ListFragmentHandler(private val listFragment: ListFragment) : Handler() {
                 }
             }
             2 -> {
-                listFragment.addVideoItem(msg.obj as VideoItem)
+                try {
+                    listFragment.addVideoItem(msg.obj as VideoItem)
+                } catch (ex: Exception) {
+                    Log.wtf("Add Video Item Error", ex)
+                }
             }
         }
+        super.handleMessage(msg)
     }
 
 
@@ -67,9 +71,9 @@ class ListFragmentHandler(private val listFragment: ListFragment) : Handler() {
                             .getJSONObject(0).getJSONObject("shelfRenderer").getJSONObject("content")
                             .getJSONObject("verticalListRenderer").getJSONArray("items")
                     for (j in 0 until subContents.length()) {
-                        listFragment.addItem(
-                            VideoItem(subContents.getJSONObject(j).getJSONObject("compactVideoRenderer"))
-                        )
+                        if (subContents.getJSONObject(j).has("compactVideoRenderer")) {
+                            listFragment.addItem(VideoItem(subContents.getJSONObject(j).getJSONObject("compactVideoRenderer")))
+                        }
                     }
                 }
             }

@@ -2,9 +2,7 @@ package net.slardar.noadsyoutube
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.Intent
 import android.graphics.PorterDuff
-import android.net.Uri
 import android.os.Bundle
 import android.os.Message
 import android.support.v4.app.Fragment
@@ -21,6 +19,7 @@ import net.slardar.widget.SlardarScrollView
 import org.json.JSONObject
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 abstract class ListFragment : Fragment() {
     private lateinit var rootView: FrameLayout
@@ -38,7 +37,7 @@ abstract class ListFragment : Fragment() {
 
     internal var baseContext: Context? = null
 
-    private val header: ArrayList<Pair<String, String>> = ArrayList()
+    private val header: HashMap<String, String> = HashMap()
 
     private val YOUTUBE_HEADER: Array<String> =
         arrayOf(
@@ -99,11 +98,7 @@ abstract class ListFragment : Fragment() {
 
         if (videoItems.count() > 0) {
             for (index: Int in 0 until loadedItems) {
-                VideoItem.addVideoItemToView(this.requireContext(), videoItems[index], itemsList, displayTheme)?.run {
-                    this.setOnClickListener {
-                        playVideo(it as LinearLayout)
-                    }
-                }
+                VideoItem.addVideoItemToView(this.requireContext(), videoItems[index], itemsList, displayTheme)
             }
             setLoading(false)
         }
@@ -154,14 +149,14 @@ abstract class ListFragment : Fragment() {
                 "clickTrackingParams"
             ) + "&pbj=1"
         listFragmentHandler = ListFragmentHandler(this)
-        if (header.count() != YOUTUBE_HEADER.size / 2) {
-            var index = 0
-            while (index < YOUTUBE_HEADER.size) {
-                header.add(Pair(YOUTUBE_HEADER[index], YOUTUBE_HEADER[index + 1]))
-                index += 2
-            }
+
+        for (index in 0 until YOUTUBE_HEADER.size - 1) {
+            if (index % 2 == 0)
+                header[YOUTUBE_HEADER[index]] = YOUTUBE_HEADER[index + 1]
         }
-        header.add(Pair("accept-language", Locale.getDefault().toString() + ";q=0.9, *;q=0.2"))
+
+
+        header["accept-language"] = Locale.getDefault().toString() + ";q=0.9, *;q=0.2"
         SlardarHTTPSGet.getStringThread(url, header, listFragmentHandler, 1)
     }
 
@@ -256,11 +251,7 @@ abstract class ListFragment : Fragment() {
             videoItem,
             itemsList,
             displayTheme
-        )?.run {
-            this.setOnClickListener {
-                playVideo(it as LinearLayout)
-            }
-        }
+        )
 
         if (loadingItemLayout != null) {
             loadingItemLayout = null
@@ -278,25 +269,12 @@ abstract class ListFragment : Fragment() {
             Toast.makeText(context, R.string.id_missing, Toast.LENGTH_SHORT).show()
         } else {
             val videoID: String = view.tag as String
-            var intent: Intent? = context!!.packageManager.getLaunchIntentForPackage("com.google.android.youtube")
-            when (intent != null) {
-                // Set Flags to start YouTube
-                true -> {
-                    when (videoID.isNotEmpty()) {
-                        true -> {
-                            intent = Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:$videoID"))
-                        }
-                    }
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                }
-
-                // Launch Google Play Store
-                false -> {
-                    intent = Intent(Intent.ACTION_VIEW)
-                    intent.data = Uri.parse(getString(R.string.youtube_market))
-                }
+            if (videoID.isNotEmpty()) {
+                /* val msg = Message()
+                 msg.obj = videoID
+                 msg.arg1 = 3
+                 listFragmentHandler.sendMessage(msg)*/
             }
-            startActivity(intent)
         }
     }
 }

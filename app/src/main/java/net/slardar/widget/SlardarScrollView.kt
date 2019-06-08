@@ -48,6 +48,7 @@ class SlardarScrollView : NestedScrollView {
         reloadBitmapBackgroundPaint.color = Color.argb(255, 85, 85, 85)
         reloadBitmap = buildReloadBitmap(reloadBitmapOrigin)
 
+
     }
 
     fun setScrollChangedListener(scrollChanged: ((SlardarScrollView) -> Unit)?) {
@@ -121,6 +122,7 @@ class SlardarScrollView : NestedScrollView {
     fun getScrollBottom(): Int {
         return this.getChildAt(this.childCount - 1).bottom + this.paddingBottom - this.height
     }
+
 
     override fun onScrollChanged(l: Int, t: Int, oldl: Int, oldt: Int) {
         super.onScrollChanged(l, t, oldl, oldt)
@@ -202,12 +204,11 @@ class SlardarScrollView : NestedScrollView {
 
         private var refreshLoading = false
 
-
         override fun onTouch(v: View, event: MotionEvent): Boolean {
             when (event.actionMasked) {
                 MotionEvent.ACTION_DOWN,
                 MotionEvent.ACTION_MOVE -> {
-                    if (startY == -1.0f) {
+                    if (startY < 0) {
                         bottom =
                             scrollView.getChildAt(scrollView.childCount - 1).bottom + scrollView.paddingBottom - scrollView.height
                         startScrollY = scrollView.scrollY

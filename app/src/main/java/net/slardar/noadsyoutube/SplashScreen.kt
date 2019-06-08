@@ -45,13 +45,17 @@ class SplashScreen : AppCompatActivity() {
         }
 
         acceptButton.setOnClickListener {
-            val intent = Intent(baseContext, MainActivity::class.java)
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
-            if (videoID.isNotEmpty()) {
-                intent.putExtra("shareURL", videoID)
+            val activityIntent = if (videoID.isNotEmpty()) {
+                Intent(baseContext, PlayVideo::class.java)
+            } else {
+                Intent(baseContext, MainActivity::class.java)
             }
-            startActivity(intent)
-            finish()
+            if (videoID.isNotEmpty()) {
+                activityIntent.putExtra("VID", videoID)
+            }
+            activityIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+            this.startActivity(activityIntent)
+            this.finish()
         }
     }
 

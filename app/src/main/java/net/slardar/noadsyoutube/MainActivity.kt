@@ -11,6 +11,7 @@ import net.slardar.widget.SlardarFragmentPagerAdapter
 import net.slardar.widget.SlardarHTTPSGet
 import org.json.JSONArray
 import java.util.*
+import kotlin.collections.HashMap
 
 
 class MainActivity : AppCompatActivity() {
@@ -29,17 +30,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var updateHandler: MainUpdateHandler
 
     private var tabs: JSONArray? = null
-
-
-    companion object {
-        private val YOUTUBE_HEADER: Array<String> =
-            arrayOf(
-                "User-Agent", "Mozilla/5.0 (Linux; Android 5.0)",
-                "X-YouTube-Client-Name", "2",
-                "X-YouTube-Client-Version", "2.20190419"
-            )
-
-    }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
         super.onRestoreInstanceState(savedInstanceState)
@@ -276,8 +266,8 @@ class MainActivity : AppCompatActivity() {
             3 -> subscriptionsFragment.setLoading(true)
         }
 
-        val languageHeader: ArrayList<Pair<String, String>> = ArrayList()
-        languageHeader.add(Pair("accept-language", Locale.getDefault().toString() + ";q=0.9, *;q=0.2"))
+        val languageHeader: HashMap<String, String> = HashMap()
+        languageHeader["accept-language"] = Locale.getDefault().toString() + ";q=0.9, *;q=0.2"
         if (isLogin) {
             //Is Login
 
