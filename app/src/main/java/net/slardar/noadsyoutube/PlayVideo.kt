@@ -1,10 +1,10 @@
 package net.slardar.noadsyoutube
 
-import android.content.Context
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.View
+import android.widget.FrameLayout
+import android.widget.ProgressBar
 import net.slardar.widget.SlardarHTTPSGet
 import java.util.*
 import kotlin.collections.HashMap
@@ -12,8 +12,9 @@ import kotlin.collections.HashMap
 class PlayVideo : AppCompatActivity() {
     private var videoID: String = ""
     private var displayTheme: Int = 0
+    private lateinit var loadingVideoProgressBar: ProgressBar
     private val requestHeader: HashMap<String, String> = HashMap()
-    private val playvideoHandler: PlayVideoHandler = PlayVideoHandler(this)
+    private val playVideoHandler: PlayVideoHandler = PlayVideoHandler(this)
 
 
     companion object {
@@ -29,12 +30,11 @@ class PlayVideo : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_play_video)
+        loadingVideoProgressBar = findViewById(R.id.loadingVideoProgressBar)
+        loadingVideoProgressBar.visibility = View.VISIBLE
 
-        val sharedPreferences: SharedPreferences? = this.getPreferences(Context.MODE_PRIVATE)
 
-        if (sharedPreferences != null) {
-            displayTheme = sharedPreferences.getInt(getString(R.string.theme), 0)
-        }
+
 
 
         if (intent.hasExtra("VID")) {
@@ -42,6 +42,8 @@ class PlayVideo : AppCompatActivity() {
                 videoID = intent.getStringExtra("VID")
             }
         }
+
+        this.displayTheme = intent.getIntExtra("displayTheme", 0)
 
         for (index in 0 until YOUTUBE_HEADER.size - 1) {
             if (index % 2 == 0)
@@ -51,9 +53,16 @@ class PlayVideo : AppCompatActivity() {
         SlardarHTTPSGet.getStringThread(
             "https://www.youtube.com/get_video_info?html5=1&app=desktop&video_id=$videoID",
             requestHeader,
-            playvideoHandler,
+            playVideoHandler,
             0
         )
+
+
+        if (displayTheme == 0) {
+            findViewById<FrameLayout>(R.id.videoFrameLayout).setBackgroundResource(R.color.dark_background_color)
+        } else {
+            findViewById<FrameLayout>(R.id.videoFrameLayout).setBackgroundResource(R.color.light_background_color)
+        }
     }
 
     override fun onStart() {

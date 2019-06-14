@@ -20,4 +20,6 @@
     <string name="no_data">无数据加载</string>
     <string name="id_missing">播放视频失败, 视频ID丢失</string>
     <string name="video_unavailable">视频无效</string>
+    <string name="audio_missing">视频音轨丢失</string>
+    <string name="video_missing">视频轨道丢失</string>
 </resources>

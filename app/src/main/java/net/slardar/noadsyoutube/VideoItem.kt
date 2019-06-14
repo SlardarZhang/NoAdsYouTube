@@ -158,6 +158,7 @@ class VideoItem(jsonObject: JSONObject) {
                     childView.setOnClickListener {
                         val intent = Intent(context, PlayVideo::class.java)
                         intent.putExtra("VID", videoItem.videoId)
+                        intent.putExtra("displayTheme", displayTheme)
                         context.startActivity(intent)
                     }
 

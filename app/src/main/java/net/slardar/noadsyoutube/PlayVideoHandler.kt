@@ -14,13 +14,13 @@ class PlayVideoHandler(private val playVideoActivity: PlayVideo) : Handler() {
         if (videoInfo.contains("reason=Video+unavailable")) {
             Toast.makeText(this.playVideoActivity, R.string.video_unavailable, Toast.LENGTH_LONG).show()
             this.playVideoActivity.onBackPressed()
+            return
         }
         val startIndex: Int = videoInfo.indexOf("adaptive_fmts") + 14
         val endIndex: Int = videoInfo.indexOf("&", startIndex)
         if (startIndex == 13 || endIndex == -1)
             return
         val adaptiveFmts: String = URLDecoder.decode(videoInfo.substring(startIndex, endIndex), "UTF-8")
-
         val qualityList: HashMap<String, String> = HashMap()
         val originalQualityList: List<String> = adaptiveFmts.split("quality_label")
 
@@ -35,17 +35,31 @@ class PlayVideoHandler(private val playVideoActivity: PlayVideo) : Handler() {
                     if (!qualityList.containsKey(quality) && url.contains("mime=video")) {
                         qualityList.put(quality, url)
                         Log.wtf("QU", quality + "/" + url)
-                    } else if (url.contains("mime=audio")) {
-                        qualityList.put("AUDIO", url)
-                        Log.wtf("AU", "AUDIO/" + url)
                     }
-                } else {
-                    Log.wtf("OTHER", it)
                 }
-            } else {
-                Log.wtf("OTHERFMT", it)
             }
         }
+
+        var lastIndex = originalQualityList.last().indexOf("type=audio%2Fmp4", 0, true)
+        lastIndex = originalQualityList.last().indexOf("url=", lastIndex, true) + 4
+        val audioUrl =
+            URLDecoder.decode(
+                originalQualityList.last().substring(
+                    lastIndex,
+                    originalQualityList.last().indexOf("&", lastIndex)
+                ), "UTF-8"
+            )
+        if (audioUrl.length < 10) {
+            Toast.makeText(this.playVideoActivity, R.string.audio_missing, Toast.LENGTH_LONG).show()
+            this.playVideoActivity.onBackPressed()
+            return
+        } else if (qualityList.count() < 1) {
+            Toast.makeText(this.playVideoActivity, R.string.video_missing, Toast.LENGTH_LONG).show()
+            this.playVideoActivity.onBackPressed()
+            return
+        }
+        qualityList.put("AUDIO", audioUrl)
+        Log.wtf("AUDIO", audioUrl)
         super.handleMessage(msg)
     }
 }

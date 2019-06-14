@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             android:background="@color/dark_background_color"
              android:layout_width="match_parent"
-             android:layout_height="match_parent">
+             android:layout_height="match_parent" android:id="@+id/videoFrameLayout">
     <ProgressBar
             style="?android:attr/progressBarStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/loadingProgressBar" android:layout_gravity="center"/>
+            android:id="@+id/loadingVideoProgressBar"
+            android:layout_gravity="center"/>
 </FrameLayout>

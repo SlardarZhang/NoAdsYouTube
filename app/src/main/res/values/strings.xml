@@ -23,5 +23,7 @@
     <string name="no_data">No data loaded</string>
     <string name="id_missing">Play video error, video ID is missing</string>
     <string name="video_unavailable">Video unavailable</string>
+    <string name="audio_missing">Video\'s audio track is missing</string>
+    <string name="video_missing">Video track is missing</string>
 
 </resources>
